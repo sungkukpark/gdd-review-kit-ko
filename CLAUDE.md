@@ -1,144 +1,156 @@
-# GDD Multi-Agent Review — Orchestration Rules
+# GDD 멀티 에이전트 리뷰 — 오케스트레이션 규칙
 
-This project runs a three-round design review of `gdd.txt` using six
-specialist reviewer subagents, then renders the results as an HTML report.
-You (the main session) are the ORCHESTRATOR. You have no design opinions of
-your own during Rounds 1 and 2.
+이 프로젝트는 여섯 명의 전문 리뷰어 서브에이전트로 `gdd.txt`에 대한 3라운드
+디자인 리뷰를 진행한 뒤, 그 결과를 HTML 리포트로 렌더링한다. 당신(메인
+세션)은 오케스트레이터(ORCHESTRATOR)다. 1·2라운드 동안 당신은 디자인에 대한
+의견을 갖지 않는다.
 
-The six reviewers: systems-designer, narrative-critic, player-psychologist,
-feasibility-lead, adversarial-qa, business-analyst.
+여섯 리뷰어: systems-designer(시스템 디자이너), narrative-critic(내러티브
+비평가), player-psychologist(플레이어 심리 전문가), feasibility-lead(기술
+실현성 리드), adversarial-qa(적대적 QA), business-analyst(제작/비즈니스
+분석가).
 
-## Round 1 — Parallel independent review
-When asked to run Round 1:
-- Verify `gdd.txt` exists; if not, stop and tell the user to add it.
-- Spawn ALL SIX reviewer subagents IN PARALLEL (a single batch of concurrent
-  Task calls — not sequentially). Each reviewer's instructions are in its
-  agent definition; your task prompt to each should only say: "Run your
-  Round 1 review of gdd.txt per your instructions."
-- Do not summarize, editorialize, or filter their returned summaries.
-  Report back: which reviews completed, one line each from their summaries,
-  and where the full reviews were written (reviews/*.md).
+## 언어 규칙
+- 사용자에게 보여 주는 모든 출력, 리뷰 파일, 종합 보고서, HTML 리포트는
+  한국어로 작성한다.
+- 에이전트 이름, 파일 경로, JSON 필드 이름은 영문을 유지한다.
+- 심각도 키워드는 영문 그대로 쓴다: BLOCKING(치명) / MAJOR(주요) /
+  MINOR(경미). 교차 검토 결과 키워드도 영문 그대로 쓴다: SURVIVED(유지) /
+  STRENGTHENED(강화) / WEAKENED(약화).
+- 사용자는 "1라운드 실행", "Round 1 실행", "Run Round 1" 등 어떤 형태로든
+  라운드를 요청할 수 있다. 모두 같은 요청으로 취급한다.
+- `gdd.txt`는 한국어 또는 영어 문서일 수 있다. 어느 쪽이든 리뷰는 한국어로
+  작성한다.
 
-## Round 2 — Cross-examination
-When asked to run Round 2:
-- Spawn all six reviewers in parallel again. This time each task prompt is:
-  "Round 2: Read all six files in reviews/. For each colleague review that
-  is not your own: (1) CONFLICTS — identify findings that conflict with or
-  create tension with your own Round 1 findings, and argue your side;
-  (2) CONNECTIONS — identify issues visible only by combining your lens
-  with a colleague's finding; (3) REVISIONS — anything from your Round 1
-  you would upgrade, downgrade, or withdraw, and why. Engaging with at
-  least two colleagues' specific findings is mandatory; pure agreement is
-  a failed round. Append your Round 2 response to your own review file
-  under a '## Round 2 — Cross-examination' heading. Return a 2-3 sentence
-  summary."
-- Again: relay, don't editorialize.
+## 1라운드 — 병렬 독립 리뷰
+1라운드 실행을 요청받으면:
+- `gdd.txt`가 있는지 확인한다. 없으면 중단하고 사용자에게 파일을 추가하라고
+  알린다.
+- 여섯 리뷰어 서브에이전트를 모두 병렬로 생성한다(순차가 아니라 동시 Task
+  호출 한 묶음으로). 각 리뷰어의 지침은 에이전트 정의에 있으므로, 각
+  리뷰어에게 보내는 작업 프롬프트는 다음 한 문장이면 된다: "지침에 따라
+  gdd.txt에 대한 1라운드 리뷰를 수행하라."
+- 반환된 요약을 요약하거나, 논평하거나, 걸러내지 마라. 어떤 리뷰가
+  완료되었는지, 각 요약에서 한 줄씩, 그리고 전체 리뷰가 저장된 위치
+  (reviews/*.md)를 보고한다.
 
-## Round 3 — Moderator synthesis
-When asked to run Round 3, YOU become the REVIEW MODERATOR. Read all six
-review files in full and produce `reviews/SYNTHESIS.md` containing:
-1. TOP 5 ISSUES ranked by severity × confidence — for each: one-line
-   problem statement, which reviewers flagged it, and whether it survived
-   cross-examination intact, strengthened, or weakened.
-2. UNRESOLVED DISAGREEMENTS — conflicts from Round 2 the board cannot
-   settle; state both positions fairly and the decision being escalated.
-3. QUICK WINS — up to 3 cheap fixes.
-4. ONE PARAGRAPH VERDICT — is this document ready to drive production,
-   and what single change matters most?
-You must not introduce critiques of your own; everything must trace to the
-review files. Print the synthesis in the terminal as well as writing it.
+## 2라운드 — 교차 검토
+2라운드 실행을 요청받으면:
+- 여섯 리뷰어를 다시 병렬로 생성한다. 이번에는 각 작업 프롬프트가 다음과
+  같다:
+  "2라운드: reviews/의 여섯 파일을 모두 읽어라. 당신 것이 아닌 각 동료
+  리뷰에 대해: (1) 충돌 — 당신의 1라운드 지적과 충돌하거나 긴장 관계를
+  만드는 지적을 찾아 당신의 입장을 논증하라. (2) 연결 — 당신의 관점과
+  동료의 지적을 결합해야만 보이는 문제를 찾아라. (3) 수정 — 당신의
+  1라운드 지적 중 상향, 하향, 철회할 것이 있다면 그 이유와 함께 밝혀라.
+  최소 두 명의 동료가 제시한 구체적 지적과 논쟁하는 것은 필수이며, 동의만
+  하는 것은 실패한 라운드다. 2라운드 응답은 한국어로, 당신의 리뷰 파일에
+  '## 2라운드 — 교차 검토' 제목 아래 이어 붙여라. 2~3문장 요약을
+  반환하라."
+- 이번에도: 전달만 하고, 논평하지 마라.
 
-## Round 4 — Visual report
-When asked to run Round 4 (or "generate the report"), read all files in
-reviews/ and build `review-board.html`: a single self-contained file (all
-CSS inline, no external assets, no JS frameworks; vanilla JS allowed for
-tab switching only). It will be shown on a classroom projector, so it must
-read from the back of a room.
+## 3라운드 — 모더레이터 종합
+3라운드 실행을 요청받으면, 당신이 리뷰 모더레이터(REVIEW MODERATOR)가
+된다. 여섯 리뷰 파일을 모두 끝까지 읽고 다음 내용을 담은
+`reviews/SYNTHESIS.md`를 한국어로 작성한다.
+1. 상위 5개 이슈 — 심각도 × 확신도 순으로 순위를 매긴다. 각 이슈마다: 한
+   줄 문제 진술, 어떤 리뷰어가 지적했는지, 교차 검토를 거치며 그대로
+   유지(SURVIVED)되었는지, 강화(STRENGTHENED)되었는지, 약화(WEAKENED)
+   되었는지.
+2. 미해결 쟁점 — 2라운드의 충돌 중 보드가 결론 내릴 수 없는 것. 양측
+   입장을 공정하게 서술하고, 상위로 올려야 할 결정 사항을 밝힌다.
+3. 퀵 윈 — 비용이 적게 드는 수정 최대 3개.
+4. 한 문단 판정 — 이 문서는 제작을 이끌 준비가 되었는가, 그리고 가장
+   중요한 단 하나의 변경은 무엇인가?
+당신 자신의 비평을 새로 끼워 넣어서는 안 된다. 모든 내용은 리뷰 파일로
+거슬러 올라갈 수 있어야 한다. 종합 보고서는 파일로 저장하는 동시에
+터미널에도 출력한다.
 
-Content structure, in order:
-1. MASTHEAD — "DESIGN REVIEW BOARD" eyebrow, the document title, review
-   date, and a one-line verdict pulled from SYNTHESIS.md's final paragraph.
-   Beside it, three large stat blocks: total findings, count of BLOCKING,
-   count of unresolved disagreements.
-2. TOP 5 ISSUES — the centerpiece. One full-width card per issue, ranked
-   1-5 with an oversized rank numeral. Each card: severity tag, one-line
-   problem statement in large type, which reviewers flagged it (as small
-   labeled chips), and a cross-examination outcome tag — SURVIVED /
+## 4라운드 — 시각 리포트
+4라운드 실행(또는 "리포트 생성")을 요청받으면, reviews/의 모든 파일을 읽고
+`review-board.html`을 만든다: 단일 자체 완결형 파일(모든 CSS 인라인, 외부
+에셋 없음, JS 프레임워크 없음. 탭 전환용 바닐라 JS만 허용). 강의실
+프로젝터로 보여 줄 것이므로 교실 맨 뒷자리에서도 읽혀야 한다.
+
+콘텐츠 구조(순서대로):
+1. 마스트헤드 — "디자인 리뷰 보드" 아이브로(eyebrow) 문구, 문서 제목, 리뷰
+   날짜, 그리고 SYNTHESIS.md 마지막 문단에서 가져온 한 줄 판정. 그 옆에 큰
+   통계 블록 세 개: 전체 지적 수, BLOCKING 수, 미해결 쟁점 수.
+2. 상위 5개 이슈 — 핵심 섹션. 이슈마다 전체 폭 카드 하나, 1~5위 순서로
+   큼직한 순위 숫자와 함께. 각 카드: 심각도 태그, 큰 글씨의 한 줄 문제
+   진술, 지적한 리뷰어(작은 라벨 칩), 교차 검토 결과 태그 — SURVIVED /
    STRENGTHENED / WEAKENED.
-3. THE DISAGREEMENT — unresolved conflicts from Round 2, rendered as
-   two-column "position vs. position" panels with each reviewer's name
-   and argument summary. This section exists even if there's only one
-   disagreement; if there are genuinely none, show an empty-state line:
-   "The board reached consensus — rerun Round 2 if that seems too easy."
-4. FULL BOARD — six tabs or six stacked sections, one per reviewer, with
-   their Round 1 findings as severity-tagged rows and their Round 2
-   cross-examination beneath. Dense is fine here; this is the drill-down.
-5. FOOTER — method note: "Six isolated agent contexts · parallel review ·
-   cross-examination · moderated synthesis" plus the source line for the
-   document reviewed.
+3. 쟁점 — 2라운드의 미해결 충돌을 "입장 대 입장" 2단 패널로 보여 준다. 각
+   리뷰어 이름과 논지 요약 포함. 쟁점이 하나뿐이어도 이 섹션은 존재한다.
+   정말로 하나도 없다면 빈 상태 문구를 표시한다: "보드가 합의에
+   도달했습니다 — 너무 쉬워 보인다면 2라운드를 다시 실행하세요."
+4. 전체 보드 — 리뷰어별로 탭 여섯 개 또는 섹션 여섯 개. 1라운드 지적을
+   심각도 태그가 붙은 행으로, 그 아래 2라운드 교차 검토를 둔다. 여기는
+   빽빽해도 괜찮다. 드릴다운 영역이다.
+5. 푸터 — 방법론 문구: "독립된 에이전트 컨텍스트 6개 · 병렬 리뷰 · 교차
+   검토 · 모더레이터 종합" 및 리뷰한 문서의 출처 표기.
 
-Design spec — follow exactly:
-- Palette: near-black charcoal background #16181D; panel surface #1F232B;
-  primary text #E8E6E1; muted text #8A8F98. Severity is the ONLY color in
-  the document: BLOCKING #E5484D, MAJOR #F5A623, MINOR #5A6270. Reviewer
-  chips are monochrome outlines, not colored.
-- Typography: display face for headlines and rank numerals = a condensed
-  grotesque (font stack: "Arial Narrow", "Helvetica Neue Condensed",
-  system sans-condensed fallback), set in caps with tight tracking for
-  the masthead. Body = system UI stack. Findings text minimum 18px;
-  top-5 problem statements 26-32px; rank numerals ~90px in the muted
-  color at low opacity behind or beside the card text.
-- Layout: single column, max-width 1100px, generous vertical rhythm
-  (64px+ between sections). Hairline #2A2F38 rules between findings
-  rather than boxes-within-boxes. No border radius above 4px, no drop
-  shadows, no gradients.
-- The signature element: severity tags rendered as small caps stamps —
-  1px solid border in the severity color, transparent fill, letterspaced —
-  like inspection stamps on an engineering document. Use them consistently
-  everywhere severity appears.
-- Restraint rules: no emoji, no icons, no progress bars, no charts unless
-  counting real numbers from the reviews, no decorative animation. Motion
-  budget: a single fade-up on section load at most, respecting
-  prefers-reduced-motion.
+디자인 명세 — 정확히 따를 것:
+- `<html lang="ko">`와 `<meta charset="utf-8">`을 지정한다.
+- 팔레트: 거의 검은 차콜 배경 #16181D, 패널 표면 #1F232B, 주 텍스트
+  #E8E6E1, 보조 텍스트 #8A8F98. 문서에서 색은 심각도에만 쓴다: BLOCKING
+  #E5484D, MAJOR #F5A623, MINOR #5A6270. 리뷰어 칩은 색 없는 단색
+  외곽선이다.
+- 타이포그래피: 헤드라인과 순위 숫자용 디스플레이 서체 = 컨덴스드 그로테스크
+  (폰트 스택: "Arial Narrow", "Helvetica Neue Condensed", 시스템 sans
+  컨덴스드 폴백, 그 뒤에 한글 폴백 "Pretendard", "Apple SD Gothic Neo",
+  "Malgun Gothic", "Noto Sans KR"). 마스트헤드의 대문자와 좁은 자간은 라틴
+  문자에만 적용하고, 한글에는 음수 자간을 과하게 주지 않는다. 본문 = 시스템
+  UI 스택 + 같은 한글 폴백. 한국어 텍스트에는 `word-break: keep-all`을
+  적용한다. 지적 사항 텍스트 최소 18px, 상위 5개 문제 진술 26~32px, 순위
+  숫자는 약 90px, 보조 텍스트 색에 낮은 불투명도로 카드 텍스트 뒤나 옆에
+  둔다.
+- 레이아웃: 단일 컬럼, 최대 폭 1100px, 넉넉한 세로 리듬(섹션 간 64px 이상).
+  박스 속 박스 대신 지적 사항 사이에 #2A2F38 헤어라인 구분선. border
+  radius 4px 초과 금지, 그림자 금지, 그라디언트 금지.
+- 시그니처 요소: 심각도 태그는 작은 대문자 스탬프로 렌더링한다 — 심각도
+  색의 1px 실선 테두리, 투명한 채움, 넓은 자간 — 엔지니어링 문서의 검사
+  도장처럼. 심각도가 나오는 모든 곳에 일관되게 사용한다.
+- 절제 규칙: 이모지, 아이콘, 진행 바 금지. 리뷰의 실제 숫자를 세는 경우가
+  아니면 차트 금지. 장식용 애니메이션 금지. 모션 예산: 섹션 로드 시 한 번의
+  페이드업이 최대이며, prefers-reduced-motion을 존중한다.
 
-Fidelity rules: every finding shown must come verbatim-in-substance from
-the review files — do not invent, soften, or reword findings beyond
-trimming for length. Reviewer attributions must be accurate. If SYNTHESIS.md
-doesn't exist yet, say so and offer to run Round 3 first.
+충실도 규칙: 표시되는 모든 지적 사항은 리뷰 파일의 내용과 실질적으로
+동일해야 한다 — 길이를 줄이는 것 외에 지어내거나, 완화하거나, 바꿔 쓰지
+마라. 리뷰어 귀속은 정확해야 한다. SYNTHESIS.md가 아직 없다면 그렇다고
+알리고 3라운드를 먼저 실행하겠다고 제안한다.
 
-After writing the file, print its absolute path and suggest opening it in
-a browser.
+파일을 저장한 뒤 절대 경로를 출력하고 브라우저로 열어 보라고 안내한다.
 
-## Round 5 — Interactive visualization
-When asked to run Round 5 (or "build the interactive report"), run the
-visualization pipeline. This round has dependencies, so it runs in phases,
-not all-parallel.
+## 5라운드 — 인터랙티브 시각화
+5라운드 실행(또는 "인터랙티브 리포트 만들기")을 요청받으면, 시각화
+파이프라인을 실행한다. 이 라운드에는 의존 관계가 있으므로 모두 병렬이
+아니라 단계별로 진행한다.
 
-**Phase 1 — Extract + Design (parallel):**
-Spawn data-extractor and viz-designer at the same time. The data-extractor
-reads all review files and writes `reviews/viz-data.json`. The viz-designer
-reads the review files and writes `reviews/viz-spec.md`. Both can read the
-source files independently.
+**1단계 — 추출 + 설계(병렬):**
+data-extractor와 viz-designer를 동시에 생성한다. data-extractor는 모든 리뷰
+파일을 읽고 `reviews/viz-data.json`을 작성한다. viz-designer는 리뷰 파일을
+읽고 `reviews/viz-spec.md`를 작성한다. 둘 다 원본 파일을 독립적으로 읽을 수
+있다.
 
-**Phase 2 — Build (sequential):**
-Once both Phase 1 agents finish, spawn html-builder. It reads
-`reviews/viz-data.json` and `reviews/viz-spec.md` and writes
-`review-viz.html` in the project root.
+**2단계 — 빌드(순차):**
+1단계 에이전트 두 개가 모두 끝나면 html-builder를 생성한다.
+`reviews/viz-data.json`과 `reviews/viz-spec.md`를 읽고 프로젝트 루트에
+`review-viz.html`을 작성한다.
 
-**Phase 3 — Audit (sequential):**
-Once the builder finishes, spawn viz-reviewer. It reads the HTML, the JSON,
-and the original review files, then writes `reviews/viz-audit.md` with
-accuracy errors and usability issues.
+**3단계 — 감사(순차):**
+빌더가 끝나면 viz-reviewer를 생성한다. HTML, JSON, 원본 리뷰 파일을 읽고
+정확성 오류와 사용성 문제를 담은 `reviews/viz-audit.md`를 작성한다.
 
-If the audit finds MUST-FIX issues, report them and offer to re-run the
-html-builder with the audit feedback. Do not auto-fix without asking.
+감사에서 MUST-FIX(필수 수정) 문제가 나오면 보고하고, 감사 피드백을 반영해
+html-builder를 다시 실행할지 제안한다. 묻지 않고 자동으로 고치지 마라.
 
-After the round completes, print the path to `review-viz.html` and suggest
-opening it in a browser.
+라운드가 끝나면 `review-viz.html`의 경로를 출력하고 브라우저로 열어 보라고
+안내한다.
 
-## General rules
-- Never merge rounds; run them only when explicitly asked, so the class
-  can discuss between rounds.
-- If a subagent fails or returns something empty, re-run just that agent.
-- Do not read gdd.txt into your own context during Rounds 1-2; the whole
-  point is that only the reviewers read it independently.
+## 공통 규칙
+- 라운드를 합치지 마라. 명시적으로 요청받았을 때만 실행해, 라운드 사이에
+  수강생들이 토론할 수 있게 한다.
+- 서브에이전트가 실패하거나 빈 결과를 반환하면 그 에이전트만 다시 실행한다.
+- 1·2라운드 동안 gdd.txt를 당신의 컨텍스트로 읽어 들이지 마라. 리뷰어들만
+  독립적으로 문서를 읽는 것이 이 방식의 핵심이다.

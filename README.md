@@ -1,101 +1,119 @@
-# GDD Multi-Agent Review Kit (Claude Code)
+# GDD Review Kit · 한국어판
 
-Six AI reviewers tear apart your game design document in parallel, then
-cross-examine each other. A moderator synthesizes the result. A second
-agent team builds an interactive visualization page. You get ranked
-problems, unresolved disagreements, and two HTML reports. The whole
-thing runs in one Claude Code terminal.
+> 이 저장소는 [GixGosu/gdd-review-kit](https://github.com/GixGosu/gdd-review-kit)의
+> 원작자의 허락을 받아 번역·공개하는 한국어 배포판입니다.
+> 원본 설계: GixGosu · 한국어 번역 및 유지관리: Sungkuk Park(박성국)
 
-Review team: systems designer, narrative critic, player psychologist,
-feasibility lead, adversarial QA, business analyst.
+에이전트 지침, 오케스트레이션 규칙, 문서를 한국어로 옮겼고, 리뷰 결과와
+HTML 리포트를 한국어로 작성하도록 지침을 구성했습니다.
 
-Visualization team: data extractor, viz designer, HTML builder, viz
-reviewer.
+현재는 공개 준비 단계이며, 예제와 전체 실행 검증 결과는 이후 추가합니다.
+원본 기준과 번역 출처는 [UPSTREAM.md](./UPSTREAM.md), 권리 안내는
+[RIGHTS.md](./RIGHTS.md)에 기록했습니다.
 
-## Requirements
+여섯 명의 AI 리뷰어가 당신의 게임 디자인 문서(GDD)를 병렬로 해부한 뒤, 서로의
+리뷰를 교차 검토합니다. 모더레이터가 결과를 종합하고, 두 번째 에이전트 팀이
+인터랙티브 시각화 페이지를 만듭니다. 순위가 매겨진 문제 목록, 미해결 쟁점,
+그리고 HTML 리포트 두 개를 얻게 됩니다. 이 모든 과정이 Claude Code 터미널
+하나에서 돌아갑니다.
 
-[Claude Code](https://docs.claude.com/en/docs/claude-code/overview),
-installed and authenticated.
+리뷰 팀: 시스템 디자이너, 내러티브 비평가, 플레이어 심리 전문가, 기술 실현성
+리드, 적대적 QA, 제작/비즈니스 분석가.
 
-## Setup
+시각화 팀: 데이터 추출 담당, 시각화 디자이너, HTML 빌더, 시각화 리뷰어.
 
-1. Clone or unzip this kit. You get:
-   - `.claude/agents/` with ten agent definitions (six reviewers, four
-     for the visualization pipeline)
-   - `CLAUDE.md` with orchestration rules for all five rounds
-   - `reviews/` where output lands
-2. Drop your game design document in as **`gdd.txt`**. Plain text. If
-   it's long, trim to the pitch and gameplay overview sections. A few
-   thousand words is the sweet spot.
-3. Clear out `reviews/` if it has files from a previous run.
+## 요구 사항
 
-## Running a review
+[Claude Code](https://docs.claude.com/en/docs/claude-code/overview)가 설치되어
+있고 인증이 완료되어 있어야 합니다.
 
-Open a terminal here, run `claude`, then type these one at a time:
+## 설정
 
-    Run Round 1.
+1. 이 키트를 클론하거나 압축을 풉니다. 구성은 다음과 같습니다.
+   - `.claude/agents/` — 에이전트 정의 10개(리뷰어 6개, 시각화 파이프라인
+     4개)
+   - `CLAUDE.md` — 다섯 라운드 전체의 오케스트레이션 규칙
+   - `reviews/` — 결과물이 저장되는 곳
+2. 게임 디자인 문서를 **`gdd.txt`**라는 이름으로 넣습니다. 일반 텍스트이며
+   **UTF-8 인코딩**으로 저장하세요(한국어 문서라면 특히 중요합니다). 한국어
+   문서와 영어 문서 모두 사용할 수 있고, 리뷰는 한국어로 작성됩니다. 문서가
+   길다면 피치와 게임플레이 개요 섹션만 남기세요. 수천 단어(한국어 기준 원고지
+   수십 매) 정도가 가장 적당합니다.
+3. 이전 실행의 파일이 `reviews/`에 남아 있다면 비웁니다.
 
-    Run Round 2.
+> 에이전트 이름(`systems-designer` 등), 파일 경로, 심각도 키워드
+> (BLOCKING/MAJOR/MINOR)는 파이프라인 호환성을 위해 영문을 유지합니다.
 
-    Run Round 3.
+## 리뷰 실행
 
-    Run Round 4.
+이 폴더에서 터미널을 열고 `claude`를 실행한 뒤, 아래 명령을 하나씩 입력합니다.
 
-    Run Round 5.
+    1라운드를 실행해줘.
 
-Read the output between rounds.
+    2라운드를 실행해줘.
 
-### What each round does
+    3라운드를 실행해줘.
 
-**Round 1** spawns all six reviewers in parallel. Each gets its own
-isolated context with only the GDD and its role. Findings go to
-`reviews/<agent>.md`.
+    4라운드를 실행해줘.
 
-**Round 2** re-spawns the reviewers, this time with access to all six
-Round 1 files. They argue with each other: flag conflicts, find issues
-that only show up when you combine two lenses, revise their own calls.
+    5라운드를 실행해줘.
 
-**Round 3** turns the main session into a moderator. It reads everything
-and writes `reviews/SYNTHESIS.md` with a ranked top-5, unresolved
-disagreements, quick wins, and a verdict.
+라운드 사이에 결과를 읽어 보세요. (`Run Round 1.`처럼 영어로 입력해도
+동작합니다.)
 
-**Round 4** generates `review-board.html`, a self-contained dark-themed
-report you can open in any browser. Designed to be readable on a
-projector from the back of a room.
+### 각 라운드가 하는 일
 
-**Round 5** runs the visualization team. A data extractor pulls
-structured JSON from the reviews. A viz designer picks the right charts
-and interactions. An HTML builder produces `review-viz.html` with
-interactive filtering, severity breakdowns, a reviewer agreement matrix,
-and drill-downs into each finding's cross-examination trail. A viz
-reviewer audits the result for accuracy. This round runs in phases
-because each agent depends on the one before it.
+**1라운드**는 여섯 리뷰어를 모두 병렬로 생성합니다. 각 리뷰어는 GDD와 자신의
+역할만 담긴 독립된 컨텍스트를 받습니다. 지적 사항은 `reviews/<agent>.md`에
+저장됩니다.
 
-## Example GDD
+**2라운드**는 리뷰어들을 다시 생성하되, 이번에는 1라운드 파일 여섯 개 모두에
+접근할 수 있게 합니다. 리뷰어들은 서로 논쟁합니다. 충돌을 짚고, 두 관점을
+결합해야만 보이는 문제를 찾고, 자신의 판단을 수정합니다.
 
-Want to test-drive it? The Deus Ex "Majestic Revolutions" design doc
-works well:
+**3라운드**에서는 메인 세션이 모더레이터가 됩니다. 모든 내용을 읽고 순위가
+매겨진 상위 5개 이슈, 미해결 쟁점, 퀵 윈, 최종 판정을 담은
+`reviews/SYNTHESIS.md`를 작성합니다.
+
+**4라운드**는 어떤 브라우저에서든 열 수 있는 자체 완결형 다크 테마 리포트
+`review-board.html`을 생성합니다. 프로젝터로 띄웠을 때 교실 맨 뒷자리에서도
+읽을 수 있도록 설계되었습니다.
+
+**5라운드**는 시각화 팀을 실행합니다. 데이터 추출 담당이 리뷰에서 구조화된
+JSON을 뽑아냅니다. 시각화 디자이너가 알맞은 차트와 인터랙션을 고릅니다. HTML
+빌더가 인터랙티브 필터링, 심각도 분포, 리뷰어 합의 매트릭스, 각 지적 사항의
+교차 검토 흐름 드릴다운을 갖춘 `review-viz.html`을 만듭니다. 시각화 리뷰어가
+결과물의 정확성을 감사합니다. 각 에이전트가 앞 단계에 의존하므로 이 라운드는
+단계별로 진행됩니다.
+
+## 예제 GDD
+
+시험 삼아 돌려 보고 싶다면, Deus Ex의 "Majestic Revolutions" 디자인 문서가
+잘 맞습니다.
 
 https://archive.org/stream/DeusExDesignDoc11081997/Majestic%20Revolutions%20-%20Joe%20Martin_djvu.txt
 
-Save it as `gdd.txt`, trim to the intro pitch and gameplay overview if
-you want faster results, and run all five rounds.
+`gdd.txt`로 저장하고, 더 빠른 결과를 원하면 도입부 피치와 게임플레이 개요만
+남긴 뒤, 다섯 라운드를 모두 실행해 보세요.
 
-## Troubleshooting
+## 문제 해결
 
-**A review file is empty or missing.** Tell Claude: "Re-run just the
-\<name\> reviewer for Round 1."
+**리뷰 파일이 비어 있거나 없음.** Claude에게 말하세요: "1라운드에서
+\<이름\> 리뷰어만 다시 실행해줘."
 
-**Reviews are too vague.** "Re-run Round 1; every finding must closely
-reference a specific passage from gdd.txt."
+**리뷰가 너무 모호함.** "1라운드를 다시 실행해줘. 모든 지적은 gdd.txt의
+구체적인 구절을 가까이 인용해야 해."
 
-**Round 2 is all agreement.** "Re-run Round 2 for systems-designer and
-player-psychologist as a direct debate on the document's central design
-tension."
+**2라운드가 전부 동의뿐임.** "systems-designer와 player-psychologist로
+2라운드를 다시 실행해줘. 문서의 핵심 디자인 긴장에 대해 정면으로 토론하게
+해."
 
-**Reviews are slow.** Trim `gdd.txt` to a shorter excerpt.
+**리뷰가 느림.** `gdd.txt`를 더 짧게 줄이세요.
 
-**Round 5 visualization has accuracy errors.** The viz-reviewer writes
-its audit to `reviews/viz-audit.md`. Tell Claude: "Re-run the
-html-builder with the fixes from the viz audit, then re-run the
-viz-reviewer."
+**5라운드 시각화에 정확성 오류가 있음.** 시각화 리뷰어가 감사 결과를
+`reviews/viz-audit.md`에 기록합니다. Claude에게 말하세요: "viz audit의
+수정 사항을 반영해서 html-builder를 다시 실행하고, 그다음 viz-reviewer를
+다시 실행해줘."
+
+**한글이 깨져 보임.** `gdd.txt`가 UTF-8로 저장되었는지 확인하세요(메모장에서
+"다른 이름으로 저장" → 인코딩 UTF-8).
