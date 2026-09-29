@@ -1,5 +1,5 @@
 # 사용자의 GDD — 키트에 포함되지 않음
-gdd.txt
+/gdd.txt
 
 # 생성된 결과물
 reviews/*.md
@@ -9,3 +9,6 @@ review-viz.html
 
 # 로컬 전용 전략 및 실행 계획
 /local/
+
+# Godot 생성 캐시
+**/.godot/

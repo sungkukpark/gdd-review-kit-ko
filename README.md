@@ -7,7 +7,8 @@
 에이전트 지침, 오케스트레이션 규칙, 문서를 한국어로 옮겼고, 리뷰 결과와
 HTML 리포트를 한국어로 작성하도록 지침을 구성했습니다.
 
-현재는 공개 준비 단계이며, 예제와 전체 실행 검증 결과는 이후 추가합니다.
+현재는 공개 준비 단계입니다. 자작 GDD와 실행 가능한 Godot 예제를 제공하며,
+리뷰 파이프라인의 전체 실행 검증은 아직 진행하지 않았습니다.
 원본 기준과 번역 출처는 [UPSTREAM.md](./UPSTREAM.md), 권리 안내는
 [RIGHTS.md](./RIGHTS.md)에 기록했습니다.
 
@@ -92,13 +93,17 @@ JSON을 뽑아냅니다. 시각화 디자이너가 알맞은 차트와 인터랙
 
 ## 예제 GDD
 
-시험 삼아 돌려 보고 싶다면, Deus Ex의 "Majestic Revolutions" 디자인 문서가
-잘 맞습니다.
+[마지막 등불](./examples/last-lantern/README.md)은 이 저장소를 위해 작성한
+작은 용사 로그라이크입니다. [한국어 GDD](./examples/last-lantern/gdd.txt)에
+생성 모델(`gpt-6.1-sol`)과 effort(`high`)를 기록했습니다.
 
-https://archive.org/stream/DeusExDesignDoc11081997/Majestic%20Revolutions%20-%20Joe%20Martin_djvu.txt
+[Godot 프로젝트](./examples/last-lantern/godot/project.godot)를 Godot 4.7.2에서
+가져온 뒤 **F5**로 실행하세요. 별도 하네스나 플러그인 없이 탐험·전투·성장·
+3층 마왕전·승패·재시작을 플레이할 수 있습니다. GDD를 먼저 작성하고 리뷰 없이
+구현했으며, [게임 실행 검증](./examples/last-lantern/VALIDATION.md)을 기록했습니다.
 
-`gdd.txt`로 저장하고, 더 빠른 결과를 원하면 도입부 피치와 게임플레이 개요만
-남긴 뒤, 다섯 라운드를 모두 실행해 보세요.
+나중에 이 예제로 리뷰를 실행하려면 `examples/last-lantern/gdd.txt`를 저장소
+루트의 `gdd.txt`로 복사하고 위의 라운드 명령을 사용하세요.
 
 ## 문제 해결
 
