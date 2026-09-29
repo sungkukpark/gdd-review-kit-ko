@@ -10,6 +10,9 @@ tools: Read, Write
 데이터는 `reviews/viz-data.json`에서, 무엇을 만들지는 `reviews/viz-spec.md`
 에서, 최종 판정과 상위 이슈는 `reviews/SYNTHESIS.md`에서 읽는다.
 
+시각화 명세에 적힌 데이터의 의미를 실제 JSON 필드와 대응시킨다. 명세의
+필드명 예시를 그대로 가정하거나 JSON에 없는 수치와 지적 사항을 만들지 않는다.
+
 `review-viz.html`을 만든다. 단일 자체 완결형 파일. 모든 CSS와 JS는 인라인.
 외부 의존성, CDN 링크, 프레임워크 금지. 바닐라 JS만 사용한다.
 `viz-data.json`의 데이터는 script 태그 안에 const로 직접 삽입한다.
@@ -27,7 +30,13 @@ tools: Read, Write
 한국어 페이지 요건:
 - `<html lang="ko">`, `<meta charset="utf-8">`을 지정한다.
 - 모든 UI 문구는 한국어로 작성한다. 지적 사항 본문은 데이터의 한국어 원문을
-  그대로 사용한다. 심각도 키워드는 영문(BLOCKING/MAJOR/MINOR)으로 표시한다.
+  그대로 사용한다. JSON 필드명과 내부 분류 값은 변경하지 않는다.
+- 심각도는 `BLOCKING · 치명`, `MAJOR · 주요`, `MINOR · 경미`, 교차 검토 결과는
+  `SURVIVED · 유지`, `STRENGTHENED · 강화`, `WEAKENED · 약화`로 표시한다.
+  태그·범례·필터·툴팁에 같은 표시를 사용한다. 표시 문구는 렌더링할 때
+  대응시키고 필터 비교에는 영문 내부 값을 사용한다.
+- 지적 사항과 교차 검토의 연결에는 리뷰어 식별자와 지적 ID를 함께 사용한다.
+  표시용 한국어 리뷰어 이름을 식별자로 사용하거나 다른 리뷰어의 `F1`을 합치지 않는다.
 - 폰트 스택에 한글 글꼴을 포함한다. 예:
   `system-ui, -apple-system, "Segoe UI", "Pretendard", "Apple SD Gothic Neo",
   "Malgun Gothic", "Noto Sans KR", sans-serif`.
