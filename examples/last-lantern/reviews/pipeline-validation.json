@@ -1,0 +1,132 @@
+{
+  "tool": "Claude Code",
+  "version": "2.1.284",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "reviewIndependence": [
+    {
+      "round": 1,
+      "reviewers": [
+        "systems-designer",
+        "narrative-critic",
+        "player-psychologist",
+        "feasibility-lead",
+        "adversarial-qa",
+        "business-analyst"
+      ],
+      "rootGddReads": 0
+    },
+    {
+      "round": 2,
+      "reviewers": [
+        "systems-designer",
+        "narrative-critic",
+        "player-psychologist",
+        "feasibility-lead",
+        "adversarial-qa",
+        "business-analyst"
+      ],
+      "rootGddReads": 0
+    }
+  ],
+  "visualization": {
+    "independentInputs": {
+      "data-extractor": [
+        "SYNTHESIS.md",
+        "adversarial-qa.md",
+        "business-analyst.md",
+        "feasibility-lead.md",
+        "narrative-critic.md",
+        "player-psychologist.md",
+        "systems-designer.md"
+      ],
+      "viz-designer": [
+        "SYNTHESIS.md",
+        "adversarial-qa.md",
+        "business-analyst.md",
+        "feasibility-lead.md",
+        "narrative-critic.md",
+        "player-psychologist.md",
+        "systems-designer.md"
+      ]
+    },
+    "firstStageOverlapped": true,
+    "builderStartedAfterBothCompletions": true,
+    "htmlSavedByBuilder": true,
+    "hostCorrections": [
+      "restored omitted JSON fields without changing existing values",
+      "contained narrow-screen matrix overflow",
+      "preserved chart text size",
+      "separated related findings from original top-issue sources",
+      "counted primary conflict targets separately from supporting citations",
+      "corrected player-psychologist C1 primary peer against original review",
+      "restored bilingual severity notes and labeled extractor summaries",
+      "preserved filter reset focus and limited Escape focus return to the dispute section"
+    ],
+    "auditOnlyResumed": true,
+    "auditRuns": [
+      {
+        "run": "5-fix-2",
+        "inputs": [
+          "SYNTHESIS.md",
+          "adversarial-qa.md",
+          "business-analyst.md",
+          "feasibility-lead.md",
+          "narrative-critic.md",
+          "player-psychologist.md",
+          "review-viz.html",
+          "systems-designer.md",
+          "viz-browser-validation.json",
+          "viz-data.json",
+          "viz-spec.md"
+        ],
+        "artifact": "viz-audit-initial.md",
+        "saved": true,
+        "cliSucceeded": true
+      },
+      {
+        "run": "5-fix-3",
+        "inputs": [
+          "SYNTHESIS.md",
+          "adversarial-qa.md",
+          "business-analyst.md",
+          "feasibility-lead.md",
+          "narrative-critic.md",
+          "player-psychologist.md",
+          "review-viz.html",
+          "systems-designer.md",
+          "viz-audit.md",
+          "viz-browser-validation.json",
+          "viz-data.json",
+          "viz-spec.md"
+        ],
+        "artifact": "viz-audit-recheck.md",
+        "saved": true,
+        "cliSucceeded": true
+      },
+      {
+        "run": "5-fix-4",
+        "inputs": [
+          "player-psychologist.md",
+          "review-viz.html",
+          "viz-browser-validation.json",
+          "viz-data.json"
+        ],
+        "artifact": "viz-audit.md",
+        "saved": true,
+        "cliSucceeded": true
+      }
+    ],
+    "finalMustFixCount": 0,
+    "finalAuditScope": "remaining A1 and listed host corrections; earlier source audits retained separately",
+    "auditLimitations": [
+      "auditors did not run browsers",
+      "inline DATA exceeded Read tool limit; equality and HTML hash verified by host in both browsers",
+      "optional recommendations remain in audit reports"
+    ]
+  },
+  "browserVerification": "viz-browser-validation.json",
+  "dataVerification": "data-validation.json",
+  "rawLogsPublished": false
+}

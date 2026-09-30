@@ -4,6 +4,10 @@
 턴제 로그라이크입니다. [GDD](./gdd.txt)를 먼저 작성하고 리뷰 없이 구현했습니다.
 GDD에 생성 모델 **gpt-6.1-sol**, reasoning effort **high**를 명시했습니다.
 
+이 게임과 기존 리뷰는 비교 기준으로 보존했습니다. 해당 리뷰를 반영한
+[두 번째 게임](../last-lantern-reviewed/README.md)과
+[원본·개선본 비교 데모](../../docs/demo/index.html)에서 바뀐 규칙을 확인하세요.
+
 ![Godot에서 실행한 마지막 등불의 첫 번째 층](./preview.png)
 
 ## 실행
@@ -63,6 +67,17 @@ HP가 일부 회복됩니다. 죽으면 성장과 물약은 초기화됩니다.
 - `godot/main.gd`: 게임 규칙, 입력, UI, 도형 렌더링
 - `godot/icon.svg`: 직접 작성한 프로젝트 아이콘
 - [VALIDATION.md](./VALIDATION.md): 실제 엔진 실행 검증 결과
+- [run-log.md](./run-log.md): Claude Code 리뷰와 브라우저 실행 기록
+- [검토 보드](./review-board.html), [종합 보고서](./reviews/SYNTHESIS.md): 실제 GDD 리뷰 결과
+- [인터랙티브 시각화](./review-viz.html): 이슈·쟁점·교차 검토·심각도와 지적 필터
+- [최종 시각화 감사](./reviews/viz-audit.md): 필수 수정 0건, 남은 권고와 검증 한계
+
+GDD와 게임을 먼저 완성한 뒤 별도 Claude Code 세션으로 리뷰를 진행했습니다.
+다섯 라운드와 두 HTML의 Edge·Firefox 검증을 완료했습니다. HTML은 내려받아
+브라우저에서 열면 됩니다. 리뷰는 구현 전 GDD만을 입력으로 사용했으며,
+실제 게임의 실행 여부는 평가하지 않았습니다.
+
+[![교차 검토 매트릭스](./review-viz-preview.png)](./review-viz.html)
 
 Godot 기본 도형과 시스템 글꼴을 사용합니다. 한국어를 표시하려면 운영체제에
 맑은 고딕, Noto Sans CJK KR, Noto Sans KR 또는 Apple SD Gothic Neo 등 한글

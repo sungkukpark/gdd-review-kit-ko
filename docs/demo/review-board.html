@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>디자인 리뷰 보드 — 마지막 등불 GDD v1.0</title>
+<style>
+  :root {
+    --bg: #16181D;
+    --panel: #1F232B;
+    --text: #E8E6E1;
+    --muted: #8A8F98;
+    --line: #2A2F38;
+    --blocking: #E5484D;
+    --major: #F5A623;
+    --minor: #5A6270;
+    --display: "Arial Narrow", "Helvetica Neue Condensed", "Roboto Condensed", "Liberation Sans Narrow", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 20px;
+    line-height: 1.6;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 72px 32px 56px; }
+  section { margin-top: 96px; }
+  section:first-of-type { margin-top: 0; }
+  h2 {
+    font-family: var(--display);
+    font-size: 44px;
+    line-height: 1.15;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .section-note { color: var(--muted); font-size: 18px; margin: 0 0 32px; }
+  .en { text-transform: uppercase; letter-spacing: 0.12em; }
+  .muted { color: var(--muted); }
+
+  /* 마스트헤드 */
+  .masthead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--line); }
+  .masthead > * { min-width: 0; }
+  .eyebrow { font-family: var(--display); font-size: 22px; color: var(--muted); margin: 0 0 16px; }
+  .eyebrow .en { letter-spacing: 0.2em; font-size: 18px; }
+  h1 { font-family: var(--display); font-size: 72px; line-height: 1.05; font-weight: 700; margin: 0 0 16px; }
+  .meta { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .verdict { font-size: 26px; line-height: 1.45; margin: 0; max-width: 680px; }
+  .verdict-label { display: block; font-size: 18px; color: var(--muted); margin-bottom: 6px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(130px, auto)); gap: 0; border-left: 1px solid var(--line); }
+  .stat { padding: 0 28px; border-right: 1px solid var(--line); min-width: 0; }
+  .stat-num { font-family: var(--display); font-size: 96px; line-height: 1; font-weight: 700; }
+  .stat-num.blocking { color: var(--blocking); }
+  .stat-label { font-size: 18px; color: var(--muted); margin-top: 10px; line-height: 1.35; }
+  .stat-label .en { letter-spacing: 0.08em; }
+  .breakdown { margin-top: 28px; font-size: 18px; color: var(--muted); grid-column: 1 / -1; }
+
+  /* 태그: 검사 도장 */
+  .sev, .xr {
+    display: inline-block;
+    max-width: 100%;
+    border: 1px solid;
+    border-radius: 2px;
+    background: transparent;
+    padding: 2px 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 700;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .sev .en, .xr .en { letter-spacing: 0.14em; }
+  .sev-b { color: var(--blocking); border-color: var(--blocking); }
+  .sev-m { color: var(--major); border-color: var(--major); }
+  .sev-n { color: var(--muted); border-color: var(--minor); }
+  .xr { color: var(--text); border-color: var(--muted); font-weight: 600; }
+  .arrow { color: var(--muted); margin: 0 6px; }
+
+  .chip {
+    display: inline-block;
+    max-width: 100%;
+    border: 1px solid var(--muted);
+    border-radius: 2px;
+    padding: 1px 10px;
+    font-size: 16px;
+    color: var(--text);
+    margin: 0 6px 6px 0;
+    white-space: nowrap;
+  }
+
+  /* 상위 5개 */
+  .issue { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 24px; background: var(--panel); border-radius: 4px; padding: 36px 40px 32px 24px; margin-bottom: 20px; }
+  .rank { font-family: var(--display); font-size: 92px; line-height: 0.9; font-weight: 700; color: var(--muted); opacity: 0.35; text-align: right; }
+  .issue-tags { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .issue-statement { font-family: var(--display); font-size: 30px; line-height: 1.35; font-weight: 700; margin: 0 0 18px; }
+  .issue-by { font-size: 16px; color: var(--muted); margin-bottom: 4px; }
+  .issue-detail { font-size: 18px; color: var(--muted); margin: 14px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
+
+  /* 쟁점 */
+  .dispute { background: var(--panel); border-radius: 4px; margin-bottom: 24px; }
+  .dispute-head { padding: 26px 36px 20px; border-bottom: 1px solid var(--line); }
+  .dispute-head h3 { font-family: var(--display); font-size: 28px; line-height: 1.3; margin: 0; }
+  .dispute-no { color: var(--muted); font-size: 18px; display: block; margin-bottom: 4px; }
+  .sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .side { padding: 24px 36px 28px; }
+  .side + .side { border-left: 1px solid var(--line); }
+  .side-label { font-size: 16px; color: var(--muted); margin-bottom: 8px; }
+  .side h4 { font-size: 22px; margin: 0 0 10px; line-height: 1.4; }
+  .side p { font-size: 18px; margin: 0 0 10px; }
+  .decision { padding: 18px 36px 24px; border-top: 1px solid var(--line); font-size: 18px; }
+  .decision b { color: var(--muted); font-weight: 600; margin-right: 8px; }
+  .empty { color: var(--muted); font-size: 22px; }
+
+  /* 전체 보드 */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .tab {
+    font: inherit;
+    font-size: 18px;
+    background: transparent;
+    color: var(--muted);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 12px 18px;
+    cursor: pointer;
+  }
+  .tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--text); }
+  .tab:focus-visible { outline: 1px solid var(--text); outline-offset: -1px; }
+  .js .panel[hidden] { display: none; }
+  .panel-title { font-family: var(--display); font-size: 30px; margin: 32px 0 4px; }
+  .panel-sub { color: var(--muted); font-size: 18px; margin: 0 0 12px; }
+  .finding { padding: 22px 0; border-top: 1px solid var(--line); }
+  .finding-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; }
+  .fid { font-family: var(--display); font-size: 24px; font-weight: 700; min-width: 36px; }
+  .finding h4 { font-size: 21px; line-height: 1.45; margin: 0 0 8px; }
+  .finding p { font-size: 18px; margin: 0; }
+  .rev { font-size: 18px; color: var(--muted); margin-top: 8px !important; }
+  .r2 { margin-top: 40px; }
+  .r2 h5 { font-family: var(--display); font-size: 24px; margin: 0 0 4px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .r2 ul { list-style: none; margin: 0; padding: 0; }
+  .r2 li { font-size: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .r2 li:last-child { border-bottom: 0; }
+  .r2 .k { font-family: var(--display); font-weight: 700; margin-right: 10px; color: var(--muted); }
+  .r2-group { font-size: 16px; color: var(--muted); margin: 18px 0 2px; }
+
+  footer { margin-top: 112px; padding-top: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: 18px; }
+  footer p { margin: 0 0 8px; }
+
+  @media (max-width: 860px) {
+    .masthead { grid-template-columns: minmax(0, 1fr); }
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 0; }
+    .stat:first-child { padding-left: 0; }
+    .sides { grid-template-columns: minmax(0, 1fr); }
+    .side + .side { border-left: 0; border-top: 1px solid var(--line); }
+    .issue { grid-template-columns: minmax(0, 1fr); padding: 28px; }
+    .rank { text-align: left; }
+    h1 { font-size: 52px; }
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 48px 16px 40px; }
+    h1 { font-size: 44px; }
+    h2 { font-size: 36px; }
+    .stat { padding: 0 10px; }
+    .stat-num { font-size: 64px; }
+    .stat-label { font-size: 16px; overflow-wrap: anywhere; }
+    .stat-label .en { letter-spacing: 0.04em; }
+    .issue { padding: 24px 20px; }
+    .issue-statement { font-size: 26px; }
+    .dispute-head, .side, .decision { padding-left: 20px; padding-right: 20px; }
+    .dispute-head h3 { font-size: 24px; }
+    .sev, .xr, .chip { white-space: normal; overflow-wrap: anywhere; }
+    .tab { padding: 10px 12px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fade { animation: fadeUp 0.6s ease-out both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 1. 마스트헤드 -->
+<section class="fade" aria-label="마스트헤드">
+  <div class="masthead">
+    <div>
+      <p class="eyebrow">디자인 리뷰 보드 · <span class="en">Design Review Board</span></p>
+      <h1>마지막 등불</h1>
+      <p class="meta">게임 디자인 문서 v1.0 · 리뷰 날짜 2026-09-29 · 리뷰어 6명 · 3라운드</p>
+      <p class="verdict"><span class="verdict-label">판정</span>문서가 약속한 게임을 검증할 기준이 없으니, 수용 기준과 리뷰 게이트부터 세워야 한다.</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">30</div>
+        <div class="stat-label">전체 지적</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num blocking">3</div>
+        <div class="stat-label"><span class="en">Blocking</span> · 치명<br>(2라운드 반영)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6</div>
+        <div class="stat-label">미해결 쟁점</div>
+      </div>
+      <div class="breakdown">2라운드 반영 기준 치명 3 · 주요 19 · 경미 8 — 1라운드에는 치명 2 · 주요 21 · 경미 7</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 상위 5개 이슈 -->
+<section class="fade" aria-labelledby="top5">
+  <h2 id="top5">상위 5개 이슈</h2>
+  <p class="section-note">심각도 × 확신도 순. 출처: reviews/SYNTHESIS.md</p>
+
+  <article class="issue">
+    <div class="rank">1</div>
+    <div>
+      <div class="issue-tags">
+        <span class="sev sev-b"><span class="en">Blocking</span> · 치명</span>
+        <span class="xr"><span class="en">Strengthened</span> · 강화</span>
+      </div>
+      <p class="issue-statement">3층의 계단·"왕좌 방"·마왕 배치가 정의되지 않았고, 맵 생성이 실패했을 때의 처리도 없다</p>
+      <div class="issue-by">지적한 리뷰어</div>
+      <div>
+        <span class="chip">adversarial-qa/F2</span><span class="chip">adversarial-qa/F4</span><span class="chip">feasibility-lead/F1</span><span class="chip">systems-designer/F4</span><span class="chip">narrative-critic/F3</span><span class="chip">player-psychologist/F2</span>
+      </div>
+      <p class="issue-detail">다섯 명이 같은 구절을 독립적으로 찾아냈다. feasibility-lead가 2라운드에서 BLOCKING으로 올렸다. 영향은 크래시, 게임 시작 시점의 프리즈, 첫 판 마지막 30초의 "게임이 멈췄다"는 이탈까지 이어진다.</p>
+    </div>
+  </article>
+
+  <article class="issue">
+    <div class="rank">2</div>
+    <div>
+      <div class="issue-tags">
+        <span class="sev sev-b"><span class="en">Blocking</span> · 치명</span>
+        <span class="xr"><span class="en">Strengthened</span> · 강화</span>
+      </div>
+      <p class="issue-statement">완료 판정에 디자인 목표와 생성·재현 결함을 검증할 수단이 없고, 문서가 리뷰 게이트를 스스로 배제한다</p>
+      <div class="issue-by">지적한 리뷰어</div>
+      <div>
+        <span class="chip">business-analyst/F4</span><span class="chip">feasibility-lead/F3</span><span class="chip">feasibility-lead/F2</span><span class="chip">adversarial-qa/F5</span><span class="chip">systems-designer/F5</span>
+      </div>
+      <p class="issue-detail">8행 "GDD 리뷰 라운드 없이 Godot 구현을 진행한다"와 105행 때문에 리뷰 결과가 제작에 반영될 경로가 없다. 생성 실패, seed 재현 불가, 하네스 부재가 결합하면 "찾을 수 없는 프리즈"가 된다. 이 BLOCKING의 무게중심은 리뷰어마다 다르게 봤다. 공정 게이트, 수용 기준, 검증 수단이 그 후보다.</p>
+    </div>
+  </article>
+
+  <article class="issue">
+    <div class="rank">3</div>
+    <div>
+      <div class="issue-tags">
+        <span class="sev sev-b"><span class="en">Blocking</span> · 치명</span>
+        <span class="xr"><span class="en">Weakened</span> · 약화</span>
+      </div>
+      <p class="issue-statement">문서가 핵심이라고 선언한 "자원 배분"이 수치상 난이도를 결정하지 못한다</p>
+      <div class="issue-by">지적한 리뷰어</div>
+      <div>
+        <span class="chip">systems-designer/F1</span><span class="chip">player-psychologist/F1</span><span class="chip">business-analyst/F3</span>
+      </div>
+      <p class="issue-detail">한 판에 회복 약 150, 기본 플레이에서 받는 피해 약 40이다. 이 계산 자체는 반박되지 않았다. 그러나 adversarial-qa, feasibility-lead, player-psychologist가 BLOCKING 등급과 "과잉"이라는 문제 진술을 반박했다. systems-designer는 최악의 경우를 다시 계산해 2층 피해 약 47, 물약 순회복 1~3을 제시하고 BLOCKING을 유지했다.</p>
+    </div>
+  </article>
+
+  <article class="issue">
+    <div class="rank">4</div>
+    <div>
+      <div class="issue-tags">
+        <span class="sev sev-m"><span class="en">Major</span> · 주요</span>
+        <span class="xr"><span class="en">Strengthened</span> · 강화</span>
+      </div>
+      <p class="issue-statement">마왕을 처치해도 승리가 아니어서 클라이맥스가 무너지고, 마왕은 HP가 많은 일반 적에 불과하다</p>
+      <div class="issue-by">지적한 리뷰어</div>
+      <div>
+        <span class="chip">narrative-critic/F3</span><span class="chip">player-psychologist/F2</span><span class="chip">systems-designer/F3</span><span class="chip">systems-designer/F4</span>
+      </div>
+      <p class="issue-detail">승리를 확정하는 것이 마왕이 아니라 "마지막 적"이라서, 새벽이 해골의 마지막 일격에 붙을 수 있다. 마왕 경험치 20은 어느 순서로 잡든 쓸 곳이 없다. 진단에는 이견이 없고, 수정안을 두고 다툼이 있다(쟁점 3).</p>
+    </div>
+  </article>
+
+  <article class="issue">
+    <div class="rank">5</div>
+    <div>
+      <div class="issue-tags">
+        <span class="sev sev-m"><span class="en">Major</span> · 주요</span>
+        <span class="xr"><span class="en">Strengthened</span> · 강화</span>
+      </div>
+      <p class="issue-statement">배치 거리(≥5)와 각성 거리(≤6)가 겹치고, 각성은 벽을 관통하며 화면에 보이지 않는다</p>
+      <div class="issue-by">지적한 리뷰어</div>
+      <div>
+        <span class="chip">adversarial-qa/F3</span><span class="chip">player-psychologist/F3</span><span class="chip">systems-designer/F2</span>
+      </div>
+      <p class="issue-detail">층에 들어서자마자 기습당하는 판과, 적을 한 마리씩 끌어내는 익스플로잇이 함께 존재한다. adversarial-qa는 이것이 "시야 제한이나 안개는 없다"는 완전 정보 선언과 모순되는 숨은 정보라고 봤다.</p>
+    </div>
+  </article>
+</section>
+
+<!-- 3. 쟁점 -->
+<section class="fade" aria-labelledby="disputes">
+  <h2 id="disputes">쟁점</h2>
+  <p class="section-note">2라운드에서 보드가 결론 내리지 못한 충돌 6건. 각 쟁점 아래에 상위로 올릴 결정을 적었다.</p>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 1</span><h3>systems-designer/F1은 BLOCKING인가 MAJOR인가 — 문제는 "과잉"인가 "양극화"인가</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · BLOCKING 유지</div>
+        <h4><span class="chip">systems-designer</span></h4>
+        <p>평균적인 경우에는 회복이 피해의 3배를 넘는다. 최악의 경우에는 물약을 들고 있어도 죽는다. 어느 쪽이든 물약은 난이도 변수가 아니므로, 선언된 "자원 배분"이 하중을 받지 않는다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · MAJOR로 하향</div>
+        <h4><span class="chip">adversarial-qa</span><span class="chip">feasibility-lead</span><span class="chip">player-psychologist</span></h4>
+        <p>adversarial-qa: 총량을 줄이면 방 안 기습의 치사율만 오른다. 문제 진술을 "배치 운에 좌우되는 양극화"로 바꿔야 한다. feasibility-lead: 상수만 조정하면 되고, 진짜 차단 요소는 검증 수단이 없다는 점이다. player-psychologist: 평균만 본 계산이다. 회복만 줄이면 보이지 않는 사망이 생긴다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>목표 난이도 분포(첫 판 승률, 층별 잔여 HP, 허용 사망률)를 누가 어떤 값으로 정할 것인가</div>
+  </div>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 2</span><h3>등불은 표현 층에서 살릴 것인가, 규칙 층의 자원으로 만들 것인가</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · 표현 층</div>
+        <h4><span class="chip">narrative-critic</span></h4>
+        <p>등불의 의미는 사망 문구("등불이 꺼졌다")와 승리 연출에 붙인다. 자원과 연결하는 방안은 회복 과잉이 해결된다는 전제에서만 권한다. "HP = 불꽃" 해석은 지금 수치로는 "꺼지지 않는 등불"이 되므로 단독으로는 철회한다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · 규칙 층(등불 연료)</div>
+        <h4><span class="chip">business-analyst</span></h4>
+        <p>표현만 바꾸면 "이 게임만의 규칙이 없다"는 문제가 남는다. 턴마다 줄어드는 연료 하나가 차별점, 턴 압박, 배분 대상, 제목의 의미를 한꺼번에 만든다. 단, 플레이어용 정체성을 택할 때만 해당한다.</p>
+        <p class="muted">조건을 붙인 리뷰어: systems-designer는 "대기 비용"으로 설계하고 수치 조정을 먼저 하라고 했다. player-psychologist는 잔량 표시와 경고를 함께 넣으라고 했다. feasibility-lead는 연료 카운터로만 한정하고 시야 연동은 범위 밖에 두라고 했다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>주 사용자는 교육용(개발자·수강생)인가, 플레이어용인가 (business-analyst/F1)</div>
+  </div>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 3</span><h3>"마왕 처치 = 승리"로 바꾸면 문제가 해결되는가</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · 찬성</div>
+        <h4><span class="chip">narrative-critic</span><span class="chip">business-analyst</span><span class="chip">feasibility-lead</span></h4>
+        <p>한 줄 수정으로 경험치 무의미, 판마다 달라지는 절정, 서사 이탈을 함께 푼다. 에셋 추가가 필요 없고, 소환이나 페이즈를 넣는 것보다 비용이 가장 낮다. systems-designer는 처음으로 실제 위험/보상 선택이 생긴다고 보되, 수치 검증을 조건으로 붙였다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · 반대·보완</div>
+        <h4><span class="chip">adversarial-qa</span><span class="chip">systems-designer</span></h4>
+        <p>adversarial-qa: 해골을 무시하고 마왕에게 곧장 가는 새 최적해가 생긴다. 돌진을 허용할지 함께 정해야 한다. systems-designer: 절정이 무너지는 진짜 원인은 설계자가 마왕 배치와 각성을 통제하지 않는다는 데 있다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>승리 트리거, 마왕 배치 규칙, 마왕의 왕좌 방 행동을 하나의 결정으로 묶을 것인가</div>
+  </div>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 4</span><h3>공허한 4절 조항(37행)은 삭제할 것인가, 되살릴 것인가</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · 삭제</div>
+        <h4><span class="chip">feasibility-lead</span><span class="chip">adversarial-qa</span></h4>
+        <p>적용될 상황이 없는 죽은 문장이다. 현재 개방 조건에서는 어떻게 해석해도 코드가 같다. 지우면 끝난다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · 부분 개방으로 되살림</div>
+        <h4><span class="chip">systems-designer</span><span class="chip">narrative-critic</span></h4>
+        <p>"일부 적만 처치해도 출구 개방"이나 "층마다 수문장 한 명 처치"로 되살리면 전멸 강제가 풀리고 위험/보상 선택이 생긴다. 층의 정체성도 함께 생긴다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>출구 개방 조건을 "전멸"로 유지할 것인가, 바꿀 것인가</div>
+  </div>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 5</span><h3>무엇을 먼저 고칠 것인가: 턴 압박, 배치 거리, 각성 정보 공개</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · 배치와 정보가 먼저</div>
+        <h4><span class="chip">adversarial-qa</span><span class="chip">player-psychologist</span></h4>
+        <p>adversarial-qa: 턴 압박을 먼저 넣으면 층 진입 기습이라는 불공정 요소만 남는다. 배치 거리를 각성 거리보다 크게 잡는 것이 먼저다. player-psychologist: 정보 없이 턴 압박만 주면 "기다려도 벌받고 들어가도 기습당한다"고 느낀다.</p>
+        <p class="muted">feasibility-lead: 배치 거리를 7로 올리면 생성 실패율이 오르므로 폴백 규칙이 먼저다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · 턴 압박과 정보 공개는 한 묶음</div>
+        <h4><span class="chip">systems-designer</span></h4>
+        <p>대기에 비용이 없는 상태에서 각성 반경을 표시하면, 초보자도 끌어내기를 쓰게 되어 지배 전략이 모든 플레이어의 기본 전략이 된다. 두 수정은 따로 채택해서는 안 된다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>수정 순서와 묶음 단위 — 리뷰어들의 순서 주장이 서로 배타적이다</div>
+  </div>
+
+  <div class="dispute">
+    <div class="dispute-head"><span class="dispute-no">쟁점 6</span><h3>결과 창과 로그 7줄은 누구의 것인가</h3></div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-label">입장 A · 서사 슬롯으로 지킨다</div>
+        <h4><span class="chip">narrative-critic</span></h4>
+        <p>결과 창은 "새벽이 돌아온다"를 전달할 유일한 화면이다. 통계와 서사 문구를 분리하고, 서사 문구는 핵심으로 남긴다. 피드백 문구와 서사 톤은 한 표로 함께 정의해야 한다.</p>
+      </div>
+      <div class="side">
+        <div class="side-label">입장 B · 절삭 또는 규칙 안내 우선</div>
+        <h4><span class="chip">feasibility-lead</span><span class="chip">player-psychologist</span></h4>
+        <p>feasibility-lead: 결과 창 통계는 절삭 후보다. 같은 알림 문구는 연속으로 쌓지 않는다. player-psychologist: 서사 문구가 로그 7줄에서 규칙 안내를 밀어낸다. 규칙 안내는 고정 HUD에, 서사 문구는 전투가 없는 순간에만 둔다.</p>
+      </div>
+    </div>
+    <div class="decision"><b>상위 결정</b>절삭 우선순위 목록 — business-analyst는 주 사용자 정의 없이는 만들 수 없다고 본다</div>
+  </div>
+</section>
+
+<!-- 4. 전체 보드 -->
+<section class="fade" aria-labelledby="board">
+  <h2 id="board">전체 보드</h2>
+  <p class="section-note">리뷰어별 1라운드 지적과 2라운드 교차 검토. 원문 전체는 reviews/&lt;agent&gt;.md에 있다.</p>
+
+  <div class="tabs" role="tablist" aria-label="리뷰어">
+    <button class="tab" role="tab" id="t-sd" aria-controls="p-sd" aria-selected="true">systems-designer</button>
+    <button class="tab" role="tab" id="t-nc" aria-controls="p-nc" aria-selected="false" tabindex="-1">narrative-critic</button>
+    <button class="tab" role="tab" id="t-pp" aria-controls="p-pp" aria-selected="false" tabindex="-1">player-psychologist</button>
+    <button class="tab" role="tab" id="t-fl" aria-controls="p-fl" aria-selected="false" tabindex="-1">feasibility-lead</button>
+    <button class="tab" role="tab" id="t-aq" aria-controls="p-aq" aria-selected="false" tabindex="-1">adversarial-qa</button>
+    <button class="tab" role="tab" id="t-ba" aria-controls="p-ba" aria-selected="false" tabindex="-1">business-analyst</button>
+  </div>
+
+  <!-- systems-designer -->
+  <div class="panel" role="tabpanel" id="p-sd" aria-labelledby="t-sd">
+    <h3 class="panel-title">systems-designer · 시스템 디자이너</h3>
+    <p class="panel-sub">코어 루프, 성장 구조, 페이싱, 밸런스</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-b"><span class="en">Blocking</span> · 치명</span></div>
+      <h4>회복 자원이 들어오는 피해보다 몇 배 많아서, 문서가 말하는 "자원 배분"이 수치상 성립하지 않는다</h4>
+      <p>한 판 회복량은 약 150이다(물약 96, 회복 구슬 30, 레벨업 18, 층 이동 8). 기본 플레이에서 받는 피해는 약 40 안팎이다. 목표 피해/회복 비율이나 목표 사망률이 정의되어 있지 않아, 구현 뒤에 무엇을 기준으로 조정할지도 알 수 없다.</p>
+      <p class="rev">2라운드: 등급 유지, 근거 확장. 최악의 경우(약 47 피해, 물약 순회복 1~3)를 추가해 "자원이 난이도 변수가 아니다"로 논지를 넓혔다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>대기에 비용이 없고, 맵이 전부 보이고, 계단을 열려면 적을 전멸시켜야 한다. 이 셋이 겹쳐 최적 전략이 하나로 굳는다</h4>
+      <p>적을 한 마리씩 깨운다 → Space로 기다린다 → 선공한다 → 층을 전멸시킨다 → 바닥 아이템을 회수한다. 모든 판의 최적해가 같다. 전멸이 강제되므로 적을 건너뛰는 위험/보상 선택도 없다. 턴이 쌓일수록 불이익을 주는 장치가 없고, 등불은 시각 장식으로만 쓰인다.</p>
+      <p class="rev">2라운드: 등급 유지, 메커니즘 수정. 각성이 벽을 관통하므로 지배 전략을 "복도로 물러서서 무비용 대기 후 선공"으로 고쳐 썼다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>성장 곡선과 적 HP가 맞물려, 피해 난수는 거의 의미가 없고 마왕 경험치는 받을 곳이 없다</h4>
+      <p>난수가 타수를 바꾸는 경우는 실질적으로 레벨 4 대 마왕 한 곳뿐이다. 레벨 5는 마왕을 잡아야만 도달하는데, 승리 조건 때문에 아무 효과가 없다. 레벨 4가 되면 해골을 항상 1타에 잡으므로 마지막 층의 긴장이 앞 층보다 낮아질 수 있다.</p>
+      <p class="rev">2라운드: 유지. 반박된 곳이 없다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>클라이맥스인 마왕전이 "HP가 많은 일반 적"일 뿐이고, 배치 규칙도 정의되지 않았다</h4>
+      <p>행동 패턴, 페이즈, 소환 같은 고유 장치가 없다. "마왕도 한 턴에 한 번만 행동한다"가 차별점을 명시적으로 없앤다. 3층 계단과 "왕좌 방"이 정의되지 않았다. 마왕과 해골 셋이 동시에 인접하면 턴당 14 피해가 들어오는데, 3층 난이도를 가르는 이 핵심 변수가 무작위 배치에 방치되어 있다.</p>
+      <p class="rev">2라운드: 유지, 범위 축소. 고유한 몫을 "마왕과 해골이 동시에 깨어나는지를 설계자가 통제하지 않는다"로 좁혔다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>층마다 아이템 공급이 같고, 가득 차면 아이템이 바닥에 그대로 남아 "보관 창고"가 된다. 그래서 층별 경제 곡선이 없다</h4>
+      <p>가장 쉬운 1층과 가장 어려운 3층의 회복 공급이 같다. 물약 상한 5와 바닥 잔존 규칙이 합쳐져 바닥이 무료 저장소가 된다. 10장에는 목표 승률, 평균 턴 수 같은 밸런스 검증 기준이 없다.</p>
+      <p class="rev">2라운드: 유지. 셋째 항목(밸런스 검증 누락)은 business-analyst/F4의 BLOCKING으로 넘겼다.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>adversarial-qa/F3 대 F1 — 피해 추정은 낙관적인 경우만 계산했다. 최악의 경우(2층 피해 약 47, 물약 순회복 1~3)에도 물약은 난이도 변수가 아니다. 배치 거리를 7로 올리는 제안만으로는 충분하지 않다.</li>
+        <li><span class="k">C2</span>player-psychologist/F3 — 턴 압박 없이 각성 반경을 표시하면 지배 전략이 모든 플레이어의 기본 전략이 된다. 두 수정은 함께 도입해야 한다.</li>
+        <li><span class="k">C3</span>player-psychologist/F2 반박 — 마왕이 마지막이 되는 순서는 최적 플레이가 만든다. 원인은 순서의 무작위성이 아니라 설계자가 마왕 배치와 각성을 통제하지 않는다는 데 있다.</li>
+        <li><span class="k">C4</span>business-analyst/F3 — "배분할 대상이 없다"는 과장이다. 저량(물약)과 유량(구슬)의 구조는 있지만, 수치와 바닥 보관 규칙이 그것을 지운다. 순서는 수치 조정 → 바닥 보관 규칙 제거 → 필요하면 두 번째 자원이다.</li>
+        <li><span class="k">C5</span>business-analyst/F4의 BLOCKING에 동의한다. 다만 무게중심은 측정 가능한 수용 기준의 부재에 있어야 한다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>공허한 37행 조항은 "전멸 없이도 출구가 열리는" 설계의 흔적일 수 있다. 부분 처치 개방으로 되살리기를 권한다.</li>
+        <li><span class="k">L2</span>"마왕 처치 = 승리"는 문서 전체에서 첫 실제 위험/보상 선택을 만든다. 단, F1의 수치 조정과 함께 검증해야 한다.</li>
+        <li><span class="k">L3</span>피해 난수가 거의 의미 없으므로, 고정값으로 바꾸면 seed 재현성 문제의 절반이 사라진다.</li>
+        <li><span class="k">L4</span>층을 구분하는 변수는 적 구성뿐이다. 페이싱 곡선은 설계된 변수가 아니라 레벨업 타이밍의 부산물이다.</li>
+        <li><span class="k">L5</span>재플레이 동기(player-psychologist/F5)는 F2의 턴 압박을 해결한 뒤에야 효과가 있다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- narrative-critic -->
+  <div class="panel" role="tabpanel" id="p-nc" aria-labelledby="t-nc" hidden>
+    <h3 class="panel-title">narrative-critic · 내러티브 비평가</h3>
+    <p class="panel-sub">스토리 논리, 캐릭터 동기, 톤 일관성</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>제목의 핵심 오브젝트인 "등불"이 아무 기능도 하지 않고, 구조가 오히려 그 의미를 부정한다</h4>
+      <p>7절 "시야 제한이나 안개는 없다"가 어둠이라는 전제를 지운다. 등불은 8절의 용사 스프라이트 장식으로만 나온다. 기존 요소 하나에 등불의 의미를 붙이는 결정이 문서에 없다.</p>
+      <p class="rev">2라운드: 등급 유지, 권고 수정. "HP = 등불의 불꽃" 해석은 단독으로는 철회하고, 사망 문구와 승리 연출에 의미를 붙이도록 권고를 바꿨다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>약속한 결말인 "새벽이 돌아온다"가 문서상 존재하지 않는다. 이야기를 전달하는 텍스트 층이 통째로 빠져 있다</h4>
+      <p>오프닝, 승리·패배, 층 진입, 마왕 조우 문구가 하나도 명세되지 않았다. 결과 창은 순수한 통계 요약이다. 톤(비장함, 동화풍, 건조함)에 대한 지시도 없다.</p>
+      <p class="rev">2라운드: 유지. 결과 창은 절삭 후보가 아니라 서사의 유일한 결말 슬롯이다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>승리 조건이 마왕 처치를 클라이맥스에서 끌어내린다. 마왕은 "HP가 큰 해골"과 다르지 않다</h4>
+      <p>승리는 "마지막 적을 처치한 순간" 확정된다. 그래서 새벽이 돌아오는 순간이 이름 없는 해골의 마지막 일격에 붙을 수 있다. 마왕에게는 조우 연출도, 대사도, 고유 행동도 없다.</p>
+      <p class="rev">2라운드: 유지, 강화. 동료 다섯 명이 같은 영역을 지적했다. 저비용 수정이 가능하므로 BLOCKING으로 올리지는 않고, 보드의 우선 해결 대상으로 제안했다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>"마지막"이라는 단어와 무한 재시작 구조가 충돌하는데, 문서는 이 긴장을 다루지 않는다</h4>
+      <p>제목은 되돌릴 수 없는 단 한 번의 기회를 약속하지만, 구조는 즉시 새 게임과 새 seed다. 반복을 서사적으로 읽을 틀이 없다.</p>
+      <p class="rev">2라운드: 유지.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>층의 서사적 정체성("입구·병영·왕좌")이 이름뿐이고, 적 배치와 생성 규칙이 그 정체성을 뒷받침하지 않는다</h4>
+      <p>세 층의 생성 규칙이 같다. "병영"인 2층에 슬라임이 섞여 있다. 계단이 잠기는 데 서사적 설명(봉인, 경보, 수문장)이 없다.</p>
+      <p class="rev">2라운드: 유지.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>player-psychologist/F2 반박 — 마왕이 마지막에 쓰러지는 판에서도 절정은 오지 않는다. "남은 적 알림"은 절정 뒤에 뒷정리가 온다는 사실을 공식화하는 처방이다.</li>
+        <li><span class="k">C2</span>feasibility-lead/F3 반박 — 결과 창은 잘라도 되는 장식이 아니다. 통계 줄과 서사 문구를 분리하고, 서사 문구는 핵심에 두어야 한다.</li>
+        <li><span class="k">C3</span>business-analyst/F2의 선택지 (b) 반박 — "교육용이니 차별점이 필요 없다"고 선언해도 서사적 부채는 사라지지 않는다. 정직한 (b)는 서사 문장을 삭제하거나 제목을 바꾸는 것이다.</li>
+        <li><span class="k">C4</span>adversarial-qa/F2 보완 — 한 줄 확정은 공간 문제만 푼다. "마왕은 왕좌 방을 떠나지 않는다" 같은 행동 규칙도 함께 정해야 한다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>systems-designer/F1과 결합 — "HP = 등불의 불꽃"은 지금 수치에서는 "절대 꺼지지 않는 등불"이 된다.</li>
+        <li><span class="k">L2</span>마왕 처치를 승리 트리거로 삼으면 systems-designer/F3, player-psychologist/F2, 내 F3이 한 번에 정리된다. 보드의 퀵 윈 후보다.</li>
+        <li><span class="k">L3</span>공허한 4절 문장을 "층마다 수문장 한 명을 처치하면 출구가 열린다"로 고치는 선택지를 함께 검토하라.</li>
+        <li><span class="k">L4</span>부족한 피드백 슬롯이 곧 비어 있는 서사 슬롯이다. 피드백 문구와 서사 톤은 한 표로 함께 정의해야 한다.</li>
+        <li><span class="k">L5</span>"몇 번째 등불지기"처럼 도전 횟수를 서사로 세면, 저장 없이도 반복에 의미가 붙는다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- player-psychologist -->
+  <div class="panel" role="tabpanel" id="p-pp" aria-labelledby="t-pp" hidden>
+    <h3 class="panel-title">player-psychologist · 플레이어 심리 전문가</h3>
+    <p class="panel-sub">온보딩, 혼란, 좌절, 이탈 위험</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>자원이 너무 넉넉해서 문서가 말하는 "자원 배분" 긴장이 첫 판에서 생기지 않는다</h4>
+      <p>층당 약 34 HP 분량의 회복에 층 이동·레벨업 회복까지 더해진다. 초보자에게 첫 판은 "위험하지 않은 청소 작업"으로 느껴질 가능성이 높다. 목표 난이도(첫 판 승률 등)가 문서에 없다.</p>
+      <p class="rev">2라운드: 유지. adversarial-qa/F3의 분산 문제 때문에 회복량만 줄이는 해법은 위험하다는 단서를 붙였다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>마왕을 쓰러뜨려도 승리하지 않아서 절정의 순간이 무너진다</h4>
+      <p>마왕을 쓰러뜨린 직후에도 멀리 남은 해골을 찾아다녀야 할 수 있다. 판마다 절정이 오기도 하고 흐지부지 끝나기도 한다. 마왕 처치 순간의 전용 피드백도 정의되어 있지 않다.</p>
+      <p class="rev">2라운드: 유지, 근거 강화. 3층 끝 막힘 시나리오(L1)까지 고려하면 첫 판 완주를 막는 요인이다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>적이 깨어났는지 보이지 않아서 위협을 예측할 수 없고, 잠든 적을 찾아다니는 일이 생긴다</h4>
+      <p>8절은 각성 여부나 각성 반경을 표시하지 않는다. 여러 적이 한꺼번에 붙으면 불공정하다고 느끼고, 멀리 잠든 적에게는 지루하게 걸어가야 한다.</p>
+      <p class="rev">2라운드: 유지, 근거 강화. 벽 관통과 0턴 각성 때문에 매 층 반복될 수 있는 일이 된다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>잠긴 계단과 규칙 위반 입력에 대한 피드백이 정의되어 있지 않다</h4>
+      <p>잠긴 계단을 밟아도 안내가 없다. 마지막 적을 계단 위에서 처치하면 한 칸 나갔다가 다시 밟아야 하는데, 이 규칙은 버그처럼 느껴진다. 벽 충돌, 물약 없음, HP 가득 참 상태의 입력도 알림 없이 무시된다.</p>
+      <p class="rev">2라운드: 유지. 가장 먼저 고쳐야 할 항목이지만, 단독으로는 플레이 불가 상태를 만들지 않는다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span><span class="arrow">→</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>첫 승리 이후 다시 플레이할 동기가 설계되어 있지 않다</h4>
+      <p>레벨업은 고정되어 있고 적 구성은 매 판 같다. 결과 창은 비교 기준(최고 기록)을 주지 않는다. 첫 1시간이 아니라 첫 10분에 체험이 끝날 위험이 있다.</p>
+      <p class="rev">2라운드: MINOR로 하향. 주 사용자가 개발자나 수강생일 가능성(business-analyst/F1)을 반영했다. 정체성이 "플레이어용 게임"으로 결정되면 MAJOR로 돌아간다.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>systems-designer/F1 — 평균값 계산은 절반만 맞다. 실제 분포는 "대부분 지루하고, 가끔 이유를 알 수 없이 죽는" 형태다. 회복 공급만 줄이는 조정에 반대한다.</li>
+        <li><span class="k">C2</span>systems-designer/F2, adversarial-qa/F3 — 각성 거리가 보이지 않으므로 "끌어내기" 최적해는 첫 판 플레이어에게는 존재하지 않는다. 숙련 천장 문제로 재분류해야 한다.</li>
+        <li><span class="k">C3</span>narrative-critic/F2 — 서사 문구와 규칙 안내가 로그 7줄을 놓고 경쟁한다. 규칙 안내는 고정 HUD에, 서사 문구는 전투가 없는 순간에만 둔다.</li>
+        <li><span class="k">C4</span>feasibility-lead/F5는 과소평가되었다. 온보딩 채널이 전부 텍스트이므로 MAJOR로 올려야 한다. OFL 글꼴 번들은 퀵 윈이다.</li>
+        <li><span class="k">C5</span>"등불을 연료 자원으로" 제안은 온보딩 비용을 고려하지 않았다. 잔량 표시, 소진 경고, 사전 안내를 같은 결정에 묶어야 한다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>adversarial-qa/F2와 내 F2·F4를 합치면, 3층 끝에서 플레이어가 "게임이 버그로 멈췄다"고 판단할 수 있다. 첫 판을 완주하지 못하게 만드는 구조다.</li>
+        <li><span class="k">L2</span>business-analyst/F4 지지 — 온보딩 문제는 구조적으로 발견될 수 없다. "규칙 사전 설명 없는 첫 플레이 관찰 테스트 1회 이상"을 추가하자.</li>
+        <li><span class="k">L3</span>확인창 입력 누수는 "통제권 상실"로 경험된다. 상태별 입력 표로 함께 해결해야 한다.</li>
+        <li><span class="k">L4</span>systems-designer/F3의 계단식 난이도 급락은 재도전 동기 부재를 첫 판 안으로 앞당긴다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- feasibility-lead -->
+  <div class="panel" role="tabpanel" id="p-fl" aria-labelledby="t-fl" hidden>
+    <h3 class="panel-title">feasibility-lead · 기술 실현성 리드</h3>
+    <p class="panel-sub">범위, 일정, 기술적 구현 가능성</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span><span class="arrow">→</span><span class="sev sev-b"><span class="en">Blocking</span> · 치명</span></div>
+      <h4>절차적 맵 생성의 제약 집합이 공간 대비 빡빡한데, 실패 시 처리와 3층 배치 규칙이 정의되지 않음</h4>
+      <p>외벽을 뺀 17×11 칸에 네 방, ㄱ자 원형 복도, 2층 기준 11개 개체를 겹치지 않게 놓아야 한다. 재시도나 폴백 규칙이 없다. "왕좌 방의 계단 위치"는 가리키는 대상이 없다. 방 크기 범위도 없다.</p>
+      <p class="rev">2라운드: BLOCKING으로 상향. 네 명이 같은 미정의 참조를 독립적으로 찾아냈고, adversarial-qa가 크래시와 프리즈 경로를 보였다. 문서가 3층을 구현할 수 있게 해 주지 못한다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>seed 재현성을 약속하지만, 결정론을 좌우하는 처리 순서와 RNG 소비 규칙이 빠져 있음</h4>
+      <p>적 처리 순서, 경로 동률 선택, 생성용·전투용 RNG 분리가 모두 정해지지 않았다. 에디터 F5 실행에서 <code>--seed</code>를 어떤 경로로 읽는지도 알 수 없다.</p>
+      <p class="rev">2라운드: 유지, 근거 강화. 권고에 층 생성 시점과, R로 재시작할 때 seed를 유지하는지를 추가했다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>완료 판정이 요구하는 검증을 할 수단이 없고, 팀·일정·절삭 계획이 없음</h4>
+      <p>하네스를 금지했으므로 연결성은 눈으로만 "확인"된다. 팀 규모, 기간, 절삭 우선순위가 없다. 8행과 105행 때문에 모호함은 구현 중에 조용히 결정되고 기록되지 않는다.</p>
+      <p class="rev">2라운드: 유지. 차단 요소는 게이트 문구가 아니라 검증 수단의 부재이고, 그 해법은 싸다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>턴 처리 규칙 중 일부가 논리적으로 공허하거나 상태 전이가 불완전함</h4>
+      <p>37행은 68행과 함께 읽으면 적용될 상황이 없다. 확인창이 떠 있는 동안이나 층 전환 중의 입력 처리도 정의되지 않았다. 시작/플레이/확인창/결과 네 상태 머신을 명시해야 한다.</p>
+      <p class="rev">2라운드: 유지. "마지막 적을 계단 위에서 처치하면 다시 밟아야 한다"는 전이(player-psychologist/F4)도 입력 상태표에 포함해야 한다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>"외부 에셋 불필요·어디서나 실행" 요구와 시스템 글꼴 의존이 서로 충돌함</h4>
+      <p>UI가 전부 한국어라서, 글꼴이 없으면 HUD, 로그, 적 설명이 모두 깨진다. Godot 4.7.2라는 패치 버전까지 고정했지만 허용 버전 범위는 적지 않았다. OFL 한글 글꼴 번들을 권고한다.</p>
+      <p class="rev">2라운드: 유지. business-analyst/F5의 실행 파일 배포 권고는 주 사용자 결정이 내려진 뒤에만 채택해야 한다.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>systems-designer/F1 — BLOCKING이 아니라 MAJOR다. 상수는 한 시간 안에 조정할 수 있다. "약 40"은 하한 추정이고, 진짜 차단 요소는 검증 수단이 없다는 점이다.</li>
+        <li><span class="k">C2</span>adversarial-qa/F1 — 현재 개방 조건에서는 37행을 어떻게 해석해도 코드가 같다. "턴 루프 구조가 달라진다"는 주장에 반대한다.</li>
+        <li><span class="k">C3</span>adversarial-qa/F5는 자신을 과소평가했다. MAJOR가 맞다. 결함의 근원은 층 생성 시점과 RNG 소비 순서가 명세되지 않은 데 있다.</li>
+        <li><span class="k">C4</span>systems-designer/F4의 소환, 페이즈, 방 봉쇄 제안에 범위 측면에서 반대한다. 비용이 가장 낮은 해법은 "마왕 처치 = 승리, 남은 적 소멸"이다.</li>
+        <li><span class="k">C5</span>business-analyst/F3의 "등불 자원화가 비용 대비 효과가 가장 크다"는 주장은 근거가 없다. 연료 카운터로 한정하고 시야 연동은 범위 밖에 두어야 한다.</li>
+        <li><span class="k">C6</span>business-analyst/F4의 권고 (1)은 인원, 일정, 하네스 없이 실행할 수 없다. 수용 기준은 측정 수단과 짝지어야 한다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>밸런스는 틀린 것이 아니라 "검증 불가능"하다. 자가 점검 모드에 기록 출력을 붙이면 기능 검증과 밸런스 측정을 같은 수단으로 해결할 수 있다.</li>
+        <li><span class="k">L2</span>seed가 플레이어 기능이 되는 순간 결정론은 필수 요건이 된다.</li>
+        <li><span class="k">L3</span>배치 거리를 7로 올리면 생성 실패율과 충돌한다. 폴백 규칙이 먼저 정의되어 있어야 한다.</li>
+        <li><span class="k">L4</span>무시된 입력 알림은 로그 7칸 한도와 충돌한다. 같은 문구를 연속으로 쌓지 않는 규칙이 필요하다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- adversarial-qa -->
+  <div class="panel" role="tabpanel" id="p-aq" aria-labelledby="t-aq" hidden>
+    <h3 class="panel-title">adversarial-qa · 적대적 QA</h3>
+    <p class="panel-sub">내부 모순, 엣지 케이스, 규칙을 깨는 플레이어 행동</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span><span class="arrow">→</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>출구 개방 턴의 처리 순서가 문서 안에서 서로 모순된다</h4>
+      <p>4절은 출구가 열린 턴에도 "살아 있는 다른 적들"이 행동한다고 한다. 그런데 7절은 적을 모두 처치해야 출구가 열린다고 한다. 따라서 4절 규칙이 적용될 상황이 없다.</p>
+      <p class="rev">2라운드: MINOR로 하향. feasibility-lead/F4의 판단이 맞다. 지우면 끝나는 죽은 문장이다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>3층의 계단·"왕좌 방"이 정의되지 않았고, 마왕이 계단 위에서 출발한다</h4>
+      <p>3층 계단 타일이 있는지, 어느 방이 왕좌 방인지 정의가 없다. 이대로면 층 인덱스가 3을 넘는 전환, 도달 불가능한 회색 계단, 구현자마다 다른 해석이 생긴다. 한 줄로 확정해야 한다.</p>
+      <p class="rev">2라운드: 유지, 강화. 다섯 리뷰어가 독립적으로 짚었다. 퀵 윈 1순위다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>배치 거리(≥5)와 각성 거리(≤6)가 겹치고, 벽을 무시하는 맨해튼 거리로 각성해 층 진입 즉시 기습이 일어날 수 있다</h4>
+      <p>거리 5~6에 놓인 적은 0턴에 이미 깨어 있다. 벽 너머 방의 적이 한꺼번에 깨어날 수 있다. 반대로 완전 정보와 무비용 대기를 이용해 한 마리씩 끌어내는 익스플로잇도 가능하다.</p>
+      <p class="rev">2라운드: 유지, 강화. 각성이 화면에 보이지 않는 문제와 턴당 14 피해가 합쳐져 체감 불공정과 사망 악순환으로 이어진다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>절차 생성의 제약 충돌과 실패 시 대체 동작(fallback)이 없다</h4>
+      <p>순진한 무작위 재추첨 구현은 시작 시점 무한 루프로 이어진다. 게임 시작 시 적과 아이템이 겹치는 경우, 잠긴 계단 위에 적이 생성되는 경우, 1칸 복도에 배치하는 경우도 정해지지 않았다.</p>
+      <p class="rev">2라운드: 유지. 수동 검증으로는 걸러지지 않는다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span><span class="arrow">→</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>seed 재현성이 난수 스트림 설계에 달려 있는데 정의가 없고, 플레이 중 R은 seed를 버린다</h4>
+      <p>맵과 피해 난수가 스트림을 공유하면 2·3층 레이아웃이 1층의 공격 횟수에 따라 달라진다. R로 재시작하면 고정 seed가 사라진다. 확인창이 떠 있는 동안의 입력과 결과 창의 Enter 처리도 정의되지 않았다.</p>
+      <p class="rev">2라운드: MAJOR로 상향. seed는 문서가 둔 유일한 재현·검증 수단인데 기본 실행 경로에서 작동하지 않는다.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>systems-designer/F1 — 회복을 합계로만 세고 속도를 세지 않았다. 동시에 인접한 상황에서는 물약을 마실 때마다 HP가 순손실로 줄어든다. 문제는 과잉이 아니라 양극화이므로 MAJOR로 내려야 한다.</li>
+        <li><span class="k">C2</span>systems-designer/F2 — "모든 판"은 과장이다. 그 전략을 쓸 수 있는지는 seed가 정한다. 배치 거리 수정이 턴 압박보다 먼저 와야 한다.</li>
+        <li><span class="k">C3</span>narrative-critic/F3, player-psychologist/F2 — "마왕 처치 = 승리"는 해골을 무시하고 마왕에게 곧장 가는 새 시퀀스 브레이크를 만든다.</li>
+        <li><span class="k">C4</span>player-psychologist/F2의 "3층에는 계단 기능이 없다"는 단정은 문서에 없다. 이 구절은 보드 전체에서 확신도가 가장 높은 결함이다.</li>
+        <li><span class="k">C5</span>business-analyst/F4의 BLOCKING은 두 절반 중 하나만 BLOCKING이다. "미정의 규칙이 기록 없이 구현으로 흘러가는 공정"으로 서술해야 한다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>생성 실패, seed 재현 불가, 하네스 부재가 합쳐지면 찾을 수 없는 프리즈가 된다.</li>
+        <li><span class="k">L2</span>기본 실행 경로(에디터 F5)에서는 HUD에 보이는 seed를 다시 넣을 곳이 없다.</li>
+        <li><span class="k">L3</span>바닥 아이템 보관과 계단 칸 겹침이 만나는 지점에 처리 순서 공백이 있다.</li>
+        <li><span class="k">L4</span>보이지 않는 각성(player-psychologist/F3)이 F3을 불공정 문제로 격상시킨다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- business-analyst -->
+  <div class="panel" role="tabpanel" id="p-ba" aria-labelledby="t-ba" hidden>
+    <h3 class="panel-title">business-analyst · 제작/비즈니스 분석가</h3>
+    <p class="panel-sub">기능 과잉, 시장 포지셔닝, 핵심 기능과 장식의 구분</p>
+
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F1</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>이 문서는 "누구를 위한 무엇"인지 정의하지 않는다 — 교육용 예제인가, 플레이어용 게임인가</h4>
+      <p>어느 쪽이냐에 따라 우선순위가 반대로 뒤집힌다. 전달 방식(Godot 에디터 F5, 실행 파일 없음)으로 보면 실제 사용자는 개발자나 수강생이다. 2장 맨 앞에 "주 사용자" 한 줄을 명시하라고 권고한다.</p>
+      <p class="rev">2라운드: 유지, 강화. 보드는 사용자 정의 없이 player-psychologist/F5의 심각도도, 절삭 목록도 확정할 수 없다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F2</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>제목과 핵심 모티프인 "등불"이 시스템적으로 아무 일도 하지 않는다 — 차별점이 장식으로 전락</h4>
+      <p>2026년 기준으로 이 구성은 장르의 가장 기본적인 템플릿이다. 템플릿과 구별될 유일한 후보인 등불이 장식으로 격하되었다. 등불을 하중 부재로 만들든지, 차별점이 필요 없다고 명시하든지 결정해야 한다.</p>
+      <p class="rev">2라운드: 유지, 강화. narrative-critic/F1이 같은 결함을 독립적으로 지적했다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F3</span><span class="sev sev-m"><span class="en">Major</span> · 주요</span></div>
+      <h4>문서가 선언한 핵심 기둥 "이동 제한과 자원 배분"을 떠받치는 기능이 없다</h4>
+      <p>모든 회복원이 HP 하나로 수렴하므로 배분할 대상이 없다. 길목을 전술적으로 쓰게 만드는 기능도 없다. 비전 문장을 낮추거나, 최소 기능 하나를 추가해야 한다.</p>
+      <p class="rev">2라운드: 유지, 강화. 수치 튜닝만으로는 해결되지 않는다는 점을 명시했다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F4</span><span class="sev sev-b"><span class="en">Blocking</span> · 치명</span></div>
+      <h4>완료 판정에 디자인 목표 검증이 없고, 문서 스스로 리뷰를 건너뛰도록 규정한다</h4>
+      <p>10장은 기술 항목만 검증한다. 게임이 재미없어도, 5~10분이 30분이 되어도 "완료"다. 8행 "GDD 리뷰 라운드 없이 Godot 구현을 진행한다"와 105행 때문에 리뷰 지적이 반영될 경로가 없다. 변경 이력도 없다.</p>
+      <p class="rev">2라운드: 유지, 강화. 보드 내부의 난이도 판단 충돌을 해소할 수단이 없다는 점도 이 지적의 증거다.</p>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid">F5</span><span class="sev sev-n"><span class="en">Minor</span> · 경미</span></div>
+      <h4>전달 방식과 기술 의존성이 이미 좁은 사용자층을 더 좁힌다</h4>
+      <p>특정 엔진 버전 설치가 필요하고 OS 글꼴에 의존한다. <code>--seed</code>는 기본 전달 경로에서 쓰기 어려운데도 HUD에 상시 표시된다. 누구를 위한 기능인지 적혀 있지 않다.</p>
+      <p class="rev">2라운드: 유지, 논지 일부 수정. seed는 생성기 결함을 재현할 유일한 수단이므로 개발/QA용 하중 부재로 재분류했다.</p>
+    </div>
+
+    <div class="r2">
+      <h5>2라운드 — 교차 검토</h5>
+      <div class="r2-group">충돌</div>
+      <ul>
+        <li><span class="k">C1</span>narrative-critic/F1 — 표현만 바꾸면 "이 게임만의 규칙이 없다"는 문제가 남는다. 표현 층은 교육용 정체성일 때의 하한선이고, 플레이어용이면 규칙 층이 필요하다.</li>
+        <li><span class="k">C2</span>player-psychologist/F5 — 재플레이 동기 목록을 그대로 받아들이면 기능 과잉이다. 그 심각도는 F1의 결정에 종속된다.</li>
+        <li><span class="k">C3</span>systems-designer/F1 — 수치를 조여도 생기는 것은 희소성이지 배분이 아니다. 수치 조정은 필요조건이지 충분조건이 아니다.</li>
+        <li><span class="k">C4</span>adversarial-qa/F5, feasibility-lead/F3 — 검증 도구에는 찬성한다. 플레이어용 seed 편의 기능은 보류한다.</li>
+        <li><span class="k">C5</span>feasibility-lead의 "범위는 작다" — 명세가 장식에 쏠려 있고 하중 부재에는 비어 있다.</li>
+      </ul>
+      <div class="r2-group">연결</div>
+      <ul>
+        <li><span class="k">L1</span>등불 연료 하나가 네 리뷰어의 지적을 동시에 푸는 가장 싼 레버다. 단, 플레이어용 정체성일 때만 유효하다.</li>
+        <li><span class="k">L2</span>절삭 우선순위는 사용자 정의 없이 만들 수 없다.</li>
+        <li><span class="k">L3</span>보드 내부에서 "너무 쉽다"와 "seed 운에 따라 급격히 어렵다"가 맞선다. 이것을 가릴 수용 기준이 없다는 사실이 F4를 강화한다.</li>
+        <li><span class="k">L4</span>"마왕 처치 = 승리"는 비용이 거의 없는 퀵 윈이다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 푸터 -->
+<footer>
+  <p>독립된 에이전트 컨텍스트 6개 · 병렬 리뷰 · 교차 검토 · 모더레이터 종합</p>
+  <p>리뷰한 문서: gdd.txt — 「마지막 등불 — 게임 디자인 문서」 v1.0 (2026-09-29), 이 저장소를 위해 새로 만든 원작 예제(examples/last-lantern)</p>
+  <p>출처 파일: reviews/systems-designer.md · narrative-critic.md · player-psychologist.md · feasibility-lead.md · adversarial-qa.md · business-analyst.md · SYNTHESIS.md</p>
+</footer>
+
+</div>
+<script>
+  document.documentElement.classList.add('js');
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { select(tab); });
+      tab.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+        if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        if (next) { e.preventDefault(); select(next); next.focus(); }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

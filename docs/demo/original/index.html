@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>마지막 등불</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;background:#090e17;color:#e4ebf5;font:16px system-ui,sans-serif;overflow:hidden}
+    canvas{display:block;width:100%;height:100%;outline:none}
+    #loading{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:24px;background:#101a29}
+    #loading p{max-width:36em;line-height:1.7}#loading a{color:#e8c47d}
+    progress{width:min(360px,80vw);margin:auto;accent-color:#e8c47d}
+  </style>
+</head>
+<body>
+  <canvas id="canvas" tabindex="0" aria-label="마지막 등불 게임. 방향키 또는 WASD로 이동합니다."></canvas>
+  <div id="loading" role="status"><h1>등불을 켜는 중</h1><p id="status">게임을 불러오고 있습니다.</p><progress></progress></div>
+  <script src="../runtime/godot.js"></script>
+  <script>
+    const config = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":6755676,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+    config.executable = '../runtime/godot';
+    config.mainPack = 'index.pck';
+    config.canvas = document.getElementById('canvas');
+    const seedText = new URLSearchParams(location.search).get('seed') || '42';
+    const seed = /^\d+$/.test(seedText) ? Math.min(2147483646, Number(seedText)) : 42;
+    const loading = document.getElementById('loading');
+    const status = document.getElementById('status');
+    if (location.protocol === 'file:') {
+      status.textContent = '게임 폴더를 정적 HTTP 서버로 제공한 뒤 열어 주세요. 실행 방법은 docs/README.md에 있습니다.';
+      document.querySelector('progress').remove();
+    } else {
+      const engine = new Engine(config);
+      engine.startGame({
+        args: ['--', '--seed=' + seed],
+        onProgress(current,total) { const bar=document.querySelector('progress');if(total>0){bar.max=total;bar.value=current;} },
+        onPrintError(...parts) { console.error(parts.join(' ')); }
+      }).then(() => { loading.remove();config.canvas.focus(); }).catch(error => {
+        status.textContent='게임을 불러오지 못했습니다. WebGL 2를 지원하는 Edge 또는 Firefox에서 다시 열어 주세요. ' + error.message;
+        document.querySelector('progress').remove();
+        console.error(error);
+      });
+    }
+  </script>
+</body>
+</html>

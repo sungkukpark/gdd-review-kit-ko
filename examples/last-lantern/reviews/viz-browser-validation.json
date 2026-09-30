@@ -1,0 +1,91 @@
+{
+  "htmlSha256": "c788fcd9ce5d1bbc059515859ee81b02ce9fd4e05897a7695acb316fc193add8",
+  "engines": [
+    {
+      "browser": "edge",
+      "version": "154.0.4258.37",
+      "embeddedDataEqual": true,
+      "findings": 30,
+      "sourceDescriptionsAndEvidence": "pass",
+      "originalVsRelatedAttribution": "pass",
+      "filtering": "pass",
+      "sorting": "pass",
+      "emptyState": "pass",
+      "keyboard": "pass",
+      "filterFocusRetained": "pass",
+      "singleEscapeClosesDispute": "pass",
+      "compositeIdLinks": "pass",
+      "topIssueDrilldowns": 5,
+      "disputeDrilldowns": 6,
+      "matrixCells": 30,
+      "matrixCounts": "primary conflict targets and source connection references verified",
+      "supportingReferencesSeparated": "pass",
+      "reverseDirection": "pass",
+      "chartRoundSwitch": "pass",
+      "chartKeyboardFilter": "pass",
+      "focusTooltips": "pass",
+      "colorScheme": "pass",
+      "reducedMotion": true,
+      "offline": true,
+      "errors": [],
+      "requests": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scrollWidth": 1440,
+          "lang": "ko",
+          "charset": "utf-8"
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "lang": "ko",
+          "charset": "utf-8"
+        }
+      ]
+    },
+    {
+      "browser": "firefox",
+      "version": "155.0",
+      "embeddedDataEqual": true,
+      "findings": 30,
+      "sourceDescriptionsAndEvidence": "pass",
+      "originalVsRelatedAttribution": "pass",
+      "filtering": "pass",
+      "sorting": "pass",
+      "emptyState": "pass",
+      "keyboard": "pass",
+      "filterFocusRetained": "pass",
+      "singleEscapeClosesDispute": "pass",
+      "compositeIdLinks": "pass",
+      "topIssueDrilldowns": 5,
+      "disputeDrilldowns": 6,
+      "matrixCells": 30,
+      "matrixCounts": "primary conflict targets and source connection references verified",
+      "supportingReferencesSeparated": "pass",
+      "reverseDirection": "pass",
+      "chartRoundSwitch": "pass",
+      "chartKeyboardFilter": "pass",
+      "focusTooltips": "pass",
+      "colorScheme": "pass",
+      "reducedMotion": true,
+      "offline": true,
+      "errors": [],
+      "requests": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scrollWidth": 1440,
+          "lang": "ko",
+          "charset": "utf-8"
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "lang": "ko",
+          "charset": "utf-8"
+        }
+      ]
+    }
+  ]
+}

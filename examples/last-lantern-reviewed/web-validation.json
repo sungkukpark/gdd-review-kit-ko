@@ -1,0 +1,66 @@
+[
+  {
+    "browser": "edge",
+    "version": "154.0.4258.37",
+    "findings": 30,
+    "liveGames": [
+      {
+        "version": "original",
+        "seed": 42,
+        "waitTurn": 1,
+        "waitFuel": null
+      },
+      {
+        "version": "reviewed",
+        "seed": 42,
+        "waitTurn": 1,
+        "waitFuel": 89
+      }
+    ],
+    "viewports": [
+      {
+        "width": 1440,
+        "scrollWidth": 1440
+      },
+      {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    ],
+    "errors": [],
+    "remoteRequests": [],
+    "failedRequests": []
+  },
+  {
+    "browser": "firefox",
+    "version": "155.0",
+    "findings": 30,
+    "liveGames": [
+      {
+        "version": "original",
+        "seed": 42,
+        "waitTurn": 1,
+        "waitFuel": null
+      },
+      {
+        "version": "reviewed",
+        "seed": 42,
+        "waitTurn": 1,
+        "waitFuel": 89
+      }
+    ],
+    "viewports": [
+      {
+        "width": 1440,
+        "scrollWidth": 1440
+      },
+      {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    ],
+    "errors": [],
+    "remoteRequests": [],
+    "failedRequests": []
+  }
+]

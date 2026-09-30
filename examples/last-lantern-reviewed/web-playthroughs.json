@@ -1,0 +1,28 @@
+[
+  {
+    "version": "original",
+    "seed": 3,
+    "state": "won",
+    "turns": 105,
+    "hp": 36,
+    "fuel": null,
+    "kills": 13,
+    "level": 5,
+    "errors": [],
+    "restartDialogInputBlocked": true,
+    "freshSeedRestart": true
+  },
+  {
+    "version": "reviewed",
+    "seed": 3,
+    "state": "won",
+    "turns": 78,
+    "hp": 20,
+    "fuel": 52,
+    "kills": 4,
+    "level": 3,
+    "errors": [],
+    "restartDialogInputBlocked": true,
+    "freshSeedRestart": true
+  }
+]

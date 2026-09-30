@@ -4,8 +4,8 @@
 # 생성된 결과물
 reviews/*.md
 reviews/*.json
-review-board.html
-review-viz.html
+/review-board.html
+/review-viz.html
 
 # 로컬 전용 전략 및 실행 계획
 /local/

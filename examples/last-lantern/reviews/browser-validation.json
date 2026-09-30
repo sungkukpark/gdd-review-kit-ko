@@ -1,0 +1,52 @@
+[
+  {
+    "browser": "edge",
+    "version": "154.0.4258.37",
+    "textPreserved": true,
+    "tabs": 6,
+    "findings": 30,
+    "keyboard": "pass",
+    "offline": "pass",
+    "errors": [],
+    "requests": [],
+    "viewports": [
+      {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "lang": "ko",
+        "charset": "utf-8"
+      },
+      {
+        "width": 390,
+        "scrollWidth": 390,
+        "lang": "ko",
+        "charset": "utf-8"
+      }
+    ]
+  },
+  {
+    "browser": "firefox",
+    "version": "155.0",
+    "textPreserved": true,
+    "tabs": 6,
+    "findings": 30,
+    "keyboard": "pass",
+    "offline": "pass",
+    "errors": [],
+    "requests": [],
+    "viewports": [
+      {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "lang": "ko",
+        "charset": "utf-8"
+      },
+      {
+        "width": 390,
+        "scrollWidth": 390,
+        "lang": "ko",
+        "charset": "utf-8"
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "findings": 30,
+  "reviewers": 6,
+  "severityRound1": {
+    "BLOCKING": 2,
+    "MAJOR": 21,
+    "MINOR": 7
+  },
+  "severityFinal": {
+    "BLOCKING": 3,
+    "MAJOR": 19,
+    "MINOR": 8
+  },
+  "severityChanges": 4,
+  "conflicts": 30,
+  "connections": 26,
+  "topIssues": 5,
+  "disputes": 6,
+  "quickWins": 3,
+  "sourceReviewsPreserved": [
+    "systems-designer",
+    "narrative-critic",
+    "player-psychologist",
+    "feasibility-lead",
+    "adversarial-qa",
+    "business-analyst"
+  ],
+  "sourceSynthesisPreserved": true,
+  "inputSha256": "3C448E73217C632EFD7FAE2718C5E1D769B21D6AF2CBB189CFF3A725464390B9",
+  "compositeIds": "pass",
+  "sourceAttribution": "pass"
+}

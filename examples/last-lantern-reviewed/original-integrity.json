@@ -1,0 +1,21 @@
+{
+  "examples/last-lantern/reviews/adversarial-qa.md": "9021b21749bda8f7b8f29675a39090fc2c45985b6752bfa3f76ddc128162c8e7",
+  "examples/last-lantern/reviews/browser-validation.json": "693d05655773a6cfa24cb64a989cc02e2f851c65abcef06e86988d7a1507c9be",
+  "examples/last-lantern/reviews/business-analyst.md": "4876da3c2b2ed8a7b67b2c3f8055ec63cc0ab58866041d671743b33b744d3225",
+  "examples/last-lantern/reviews/data-validation.json": "1252c33a9d5eee451ef2fb4e5939562a1a114b6dacfd66ed668ad81b218290c2",
+  "examples/last-lantern/reviews/feasibility-lead.md": "78a39cc5b20f06c63c450ff7444df7558e3382dc2baed6c73fed4e9a3d66464f",
+  "examples/last-lantern/reviews/narrative-critic.md": "757ce93a7255afbed0a99419724049a21ce22aa905f06829699f83559f38b81d",
+  "examples/last-lantern/reviews/pipeline-validation.json": "aff24d96a6693908fed3abed7751a5b3890e81064839aaa17e6d18794489b947",
+  "examples/last-lantern/reviews/player-psychologist.md": "c90bca66fb9e1b9c4cc5d873f32d94c3703455310aaa5b31b5bc027319cdb01b",
+  "examples/last-lantern/reviews/SYNTHESIS.md": "5dcf6817e3514cb6a43e00046c130417527bbb56ad9f16f62b01eb5d228b4969",
+  "examples/last-lantern/reviews/systems-designer.md": "b9eb0f96c46ed12f14d30823379a9372d9065bf0ece2fda836541d1b3fdc2a3f",
+  "examples/last-lantern/reviews/viz-audit-initial.md": "ee04b8557f5e5ab58436ab080aaa983a7b21579b8d2fb5c5209bb6082ebae668",
+  "examples/last-lantern/reviews/viz-audit-recheck.md": "a906b012950fae583bbcd95179be4fa48d672603947b19ebaf861eb56b4983bf",
+  "examples/last-lantern/reviews/viz-audit.md": "0ae95fa94d08c00acab66c6311435f1ba6c83d7f5aa60685acbeb8db90c0f03b",
+  "examples/last-lantern/reviews/viz-browser-validation.json": "edfb36939637c7f954aaf53e5a40aa3151d4ef217dde29a77200805b57026494",
+  "examples/last-lantern/reviews/viz-data.json": "d15508b59aa8d6f70f7640e4377fecdced014768e36c2790c59f41ce26d0f082",
+  "examples/last-lantern/reviews/viz-spec.md": "50e230e783fb09b6740d6fb49627a3b777c9a18b4c7272fe27fca6e9d31e0b11",
+  "examples/last-lantern/gdd.txt": "3c448e73217c632efd7fae2718c5e1d769b21d6af2cbb189cff3a725464390b9",
+  "examples/last-lantern/godot/main.gd": "1534245e797826131263c8df5a7d3c4f0739ab89011fcedf00c3da0988728201",
+  "examples/last-lantern/godot/project.godot": "81d893091a934c06b9f7a46087076d4a29b65286d9abaed00d50d412eaf465be"
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>리뷰가 게임을 어떻게 바꿨나 · 마지막 등불</title>
+  <meta name="description" content="같은 한국어 GDD를 리뷰 없이 구현한 게임과 리뷰를 반영한 게임을 직접 비교합니다. 지적 30개의 반영 내역과 두 Godot 웹 게임을 제공합니다.">
+  <link rel="stylesheet" href="compare.css">
+  <script src="compare.js" defer></script>
+</head>
+<body>
+  <header class="top"><a href="../index.html">GDD Review Kit · 한국어판</a><a href="https://github.com/sungkukpark/gdd-review-kit-ko">저장소</a></header>
+  <main>
+    <section class="intro" aria-labelledby="heading">
+      <p class="eyebrow">마지막 등불 / 리뷰 전후 비교</p>
+      <h1 id="heading">리뷰가 게임을 어떻게 바꿨나</h1>
+      <p class="lede">같은 작은 용사 로그라이크, 두 가지 구현.<br>원문 지적에서 바뀐 규칙까지 확인하고 직접 플레이하세요.</p>
+      <div class="summary"><span>원문 지적 <strong>30개</strong> 반영</span><span>쟁점 <strong>6개</strong> 결정</span><span>Godot 게임 <strong>2개</strong></span></div>
+      <p class="scope">반영 수는 구현·문서 대응 항목 수입니다. 새 독립 리뷰의 해결 판정이나 사람의 재미·승률 검증 결과가 아닙니다.</p>
+      <a class="primary" href="#play">두 게임 비교 플레이 <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <section class="changes" aria-labelledby="changes-heading">
+      <div class="section-head"><h2 id="changes-heading">한눈에 보는 변화</h2><a href="#all-findings">30개 지적 전체 보기 ↓</a></div>
+      <div class="column-head"><span>리뷰의 질문</span><span>리뷰 전 · v1</span><span>리뷰 반영 · v2</span></div>
+      <article class="change-row"><div><h3>기다리기만 해도 되나?</h3><a href="review-viz.html#f-systems-designer--F2">시스템 F2</a></div><p>대기는 무료.<br>등불은 장식.</p><p><strong>매 행동 연료 −1.</strong><br>등불이 꺼지면 패배.</p></article>
+      <article class="change-row"><div><h3>자원을 어디에 쓸까?</h3><a href="review-viz.html#f-business-analyst--F3">비즈니스 F3</a></div><p>물약은 HP 회복 한 용도.<br>레벨업·층 이동도 회복.</p><p><strong>같은 물약을 H: HP +10<br>또는 O: 연료 +20에 배분.</strong></p></article>
+      <article class="change-row"><div><h3>꼭 모든 적을 잡아야 하나?</h3><a href="review-viz.html#f-systems-designer--F2">시스템 F2 · 쟁점 4</a></div><p>일반 적까지 전멸해야<br>다음 층으로 이동.</p><p><strong>수문장만 처치하면 개방.</strong><br>더 싸울지, 내려갈지 선택.</p></article>
+      <article class="change-row"><div><h3>마왕전이 절정인가?</h3><a href="review-viz.html#f-narrative-critic--F3">내러티브 F3 · 시스템 F4</a></div><p>일반 추격·근접 공격.<br>마왕 뒤에도 남은 적 처치.</p><p><strong>왕좌 고정·불길 예고·회피.</strong><br>마왕 처치 즉시 새벽 결말.</p></article>
+      <article class="change-row"><div><h3>왜 적이 갑자기 움직이지?</h3><a href="review-viz.html#f-adversarial-qa--F3">QA F3 · 심리 F3</a></div><p>벽 너머 거리로 각성.<br>잠듦·각성 상태 미표시.</p><p><strong>안전한 시작 배치·경로 거리.</strong><br>Z / !와 바닥 점으로 예측.</p></article>
+      <article class="change-row"><div><h3>의도를 어떻게 확인하나?</h3><a href="review-viz.html#f-business-analyst--F4">비즈니스 F4 · 실현성 F3</a></div><p>GDD의 공백을 구현자가 결정.<br>디자인 수용 기준 미정의.</p><p><strong>개정 GDD·반영표·내장 검증.</strong><br>자동 측정과 사람 관찰 구분.</p></article>
+      <p class="scope">원본 구현에도 결말, 3층 계단 없음, 확인창 입력 차단이 있습니다. GDD의 누락을 메운 항목과 실제 게임 규칙이 바뀐 항목을 전체 반영표에서 구분했습니다.</p>
+    </section>
+
+    <section id="play" aria-labelledby="play-heading">
+      <div class="section-head"><h2 id="play-heading">직접 비교해 보세요</h2><span class="small">실제 Godot Web 내보내기</span></div>
+      <form id="seed-form"><label for="seed">도전 seed</label><input id="seed" type="number" min="0" max="2147483646" step="1" value="42" required><button type="submit">이 seed로 두 게임 불러오기</button><span id="load-status" role="status"></span></form>
+      <p class="scope">같은 seed로 두 게임을 재현할 수 있습니다. 생성 규칙이 달라 지형이 같지는 않습니다. 게임을 클릭하면 그쪽에 키 입력이 전달됩니다.</p>
+      <div class="games">
+        <article class="game-card" data-version="original"><div class="game-heading"><h3><span>01</span> 리뷰 전 · 원본</h3><a id="original-open" href="original/index.html?seed=42" target="_blank" rel="noopener">크게 플레이 ↗</a></div><div class="screen"><img src="original-preview.png" alt="리뷰 전 원본의 1층. HP와 물약, 적과 계단을 표시합니다." width="1280" height="820"><iframe title="마지막 등불 원본 게임" allow="fullscreen; autoplay" hidden></iframe></div><output id="original-stats">HP 24 · 물약 2 · 연료 규칙 없음</output><p>방향키 / WASD 이동·공격 · Space 대기 · H 물약 · R 새 여정</p></article>
+        <article class="game-card reviewed" data-version="reviewed"><div class="game-heading"><h3><span>02</span> 리뷰 반영판</h3><a id="reviewed-open" href="reviewed/index.html?seed=42" target="_blank" rel="noopener">크게 플레이 ↗</a></div><div class="screen"><img src="reviewed-preview.png" alt="리뷰 반영판의 1층. 연료, 수문장, 잠든 적 Z와 각성 범위 점이 보입니다." width="1280" height="820"><iframe title="마지막 등불 리뷰 반영 게임" allow="fullscreen; autoplay" hidden></iframe></div><output id="reviewed-stats">HP 28 · 물약 1 · 등불 연료 90</output><p>같은 조작 + O 물약을 연료로 · 열린 계단 위 Enter · X 불길 회피</p></article>
+      </div>
+      <p class="scope">게임 시작 화면에서 Enter를 누르세요. 글자가 작으면 “크게 플레이”를 사용하세요. 데스크톱 키보드와 WebGL 2 지원 브라우저가 필요합니다.</p>
+    </section>
+
+    <section id="all-findings" aria-labelledby="all-heading">
+      <div class="section-head"><h2 id="all-heading">30개 지적, 각각 어떻게 반영했나</h2><a href="review-viz.html">원본 리뷰 시각화 ↗</a></div>
+      <label class="search-label" for="search">지적 ID·키워드 찾기</label><input id="search" type="search" placeholder="예: systems-designer/F2, 연료, 글꼴"><p id="finding-count" role="status">반영 내역을 불러오는 중입니다.</p>
+      <div id="findings"></div>
+      <noscript>전체 반영 내역은 저장소의 examples/last-lantern-reviewed/review-response.md에서 확인하세요.</noscript>
+    </section>
+
+    <section class="evidence" aria-labelledby="evidence-heading"><h2 id="evidence-heading">어디까지 확인했나</h2><p>기존 리뷰·GDD·게임 소스는 보존했습니다. 개선본은 300개 층 생성과 게임 상태 검사를 수행했고, 정해진 두 자동 정책을 각각 20 seed에서 측정했습니다. 사람의 첫 판 승률·5~10분 체험 시간·재미는 아직 확인하지 않았습니다.</p><div class="evidence-links"><a href="review-board.html">기존 검토 보드</a><a href="review-viz.html">기존 인터랙티브 리뷰</a><a href="https://github.com/sungkukpark/gdd-review-kit-ko/blob/main/examples/last-lantern-reviewed/gdd.txt">개정 GDD</a><a href="https://github.com/sungkukpark/gdd-review-kit-ko/blob/main/examples/last-lantern-reviewed/VALIDATION.md">검증 기록</a><a href="https://github.com/sungkukpark/gdd-review-kit-ko/blob/main/examples/last-lantern-reviewed/review-response.md">반영 결정표</a></div></section>
+  </main>
+  <footer>원본 키트 GixGosu · 한국어판 Sungkuk Park · 게임: Godot Engine / 글꼴: Noto Sans KR · <a href="../THIRD-PARTY.md">사용 자산 출처</a></footer>
+</body>
+</html>

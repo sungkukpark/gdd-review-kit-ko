@@ -8,7 +8,9 @@
 HTML 리포트를 한국어로 작성하도록 지침을 구성했습니다.
 
 현재는 공개 준비 단계입니다. 자작 GDD와 실행 가능한 Godot 예제를 제공하며,
-리뷰 파이프라인의 전체 실행 검증은 아직 진행하지 않았습니다.
+실제 Claude Code로 다섯 라운드를 완료했습니다. 두 HTML 보고서는 Edge·Firefox에서
+검증했고, 시각화 최종 감사의 필수 수정은 0건입니다. 실행 환경과 알려진 한계는
+[리뷰 실행 기록](./examples/last-lantern/run-log.md)에 기록했습니다.
 원본 기준과 번역 출처는 [UPSTREAM.md](./UPSTREAM.md), 권리 안내는
 [RIGHTS.md](./RIGHTS.md)에 기록했습니다.
 
@@ -93,6 +95,11 @@ JSON을 뽑아냅니다. 시각화 디자이너가 알맞은 차트와 인터랙
 
 ## 예제 GDD
 
+[리뷰 전후 비교 데모](./docs/demo/index.html)는 원본과 리뷰 반영판 두 게임을
+함께 제공합니다. **리뷰 지적 → 원본 규칙 → 반영 규칙**을 나란히 보고 실제
+Godot 웹 게임을 플레이할 수 있습니다. [로컬 데모 실행 방법](./docs/README.md)을
+참고하세요. 공개 사이트 배포와 외부 사용자의 체험 시간·승률 검증은 아직 수행하지 않았습니다.
+
 [마지막 등불](./examples/last-lantern/README.md)은 이 저장소를 위해 작성한
 작은 용사 로그라이크입니다. [한국어 GDD](./examples/last-lantern/gdd.txt)에
 생성 모델(`gpt-6.1-sol`)과 effort(`high`)를 기록했습니다.
@@ -101,6 +108,18 @@ JSON을 뽑아냅니다. 시각화 디자이너가 알맞은 차트와 인터랙
 가져온 뒤 **F5**로 실행하세요. 별도 하네스나 플러그인 없이 탐험·전투·성장·
 3층 마왕전·승패·재시작을 플레이할 수 있습니다. GDD를 먼저 작성하고 리뷰 없이
 구현했으며, [게임 실행 검증](./examples/last-lantern/VALIDATION.md)을 기록했습니다.
+
+이후 실제 Claude Code로 생성한 [검토 보드](./examples/last-lantern/review-board.html),
+[인터랙티브 시각화](./examples/last-lantern/review-viz.html),
+[종합 보고서](./examples/last-lantern/reviews/SYNTHESIS.md)를 제공합니다.
+HTML은 내려받아 브라우저에서 열면 됩니다. 다섯 라운드의 결과, 호스트 수정,
+[최종 감사](./examples/last-lantern/reviews/viz-audit.md)와 검증 범위는
+[리뷰 실행 기록](./examples/last-lantern/run-log.md)에서 확인하세요.
+
+이 원문 리뷰를 보존한 채 [리뷰 반영판 게임](./examples/last-lantern-reviewed/README.md)을
+별도로 만들었습니다. [GDD v2.0](./examples/last-lantern-reviewed/gdd.txt)과
+[30개 지적·6개 쟁점의 반영표](./examples/last-lantern-reviewed/review-response.md)에
+등불 연료, 물약 배분, 선택 전투, 마왕 패턴과 검증 기준의 변경을 기록했습니다.
 
 나중에 이 예제로 리뷰를 실행하려면 `examples/last-lantern/gdd.txt`를 저장소
 루트의 `gdd.txt`로 복사하고 위의 라운드 명령을 사용하세요.
